@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room 3 - Núcleo del Sistema</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/rooms.css">
+    <style>
+        /* Animaciones específicas para los escondites de la Sala 3 */
+        #grate.moved { transform: translateX(-40px) rotate(-10deg); }
+        #toolbox.open { background-color: #7f8c8d; border-top-color: #bdc3c7; }
+        .secret-clue { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .secret-clue.revealed { opacity: 1; pointer-events: auto; }
+    </style>
+</head>
+<body>
+
+    <header class="room-header">
+        <div class="room-title">SALA 3: NÚCLEO DE ENERGÍA</div>
+        <button id="btn-back" class="btn-back">⬅ Volver a Sala 2</button>
+        <button id="btn-exit-game" class="btn-back" style="border-color: #ef4444; color: #ef4444;">✖ Salir</button>
+    </header>
+
+    <main class="game-area">
+        <div id="room-environment" class="room-bg" style="background-color: #1a202c;">
+            
+            <div id="door-escape" class="interactable locked" style="left: 5%; top: 10%; width: 120px; height: 250px; background-color: #2d3748; border: 2px solid #111;"></div>
+            
+            <!-- ESCONDITE 1: Plaqueta de Variables (A simple vista) -->
+            <div id="math-note" class="interactable" style="left: 45%; top: 60%; width: 60px; height: 40px; background-color: #fef08a; color: black; font-size: 10px; border-radius: 2px; transform: rotate(-10deg);">Plaqueta<br>Técnica</div>
+            
+            <!-- ESCONDITE 2: La Rejilla (Oculta la Fórmula 1) -->
+            <div id="grate" class="interactable" style="left: 20%; top: 75%; width: 80px; height: 80px; background-color: #4a5568; border: 4px dashed #2d3748; z-index: 10;">Rejilla</div>
+            <div id="clue-v1" class="interactable secret-clue" style="left: 22%; top: 77%; width: 50px; height: 50px; background-color: #fff; color: black; font-size: 10px; z-index: 5;">Papel V1</div>
+
+            <!-- ESCONDITE 3: El Monitor (Oculta la Fórmula 2) -->
+            <div id="terminal" class="interactable" style="left: 65%; top: 30%; width: 100px; height: 80px; background-color: #000; border: 4px solid #333; color: #00ff41; font-size: 12px;">Terminal</div>
+
+            <!-- ESCONDITE 4: Caja de Herramientas (Oculta la Fórmula 3) -->
+            <div id="toolbox" class="interactable" style="right: 10%; top: 55%; width: 90px; height: 60px; background-color: #c0392b; border-top: 10px solid #e74c3c; border-radius: 4px;">Caja Herr.</div>
+            <div id="clue-v3" class="interactable secret-clue" style="right: 15%; top: 50%; width: 50px; height: 50px; background-color: #3498db; font-size: 10px;">Plano V3</div>
+
+            <!-- Panel de Control Principal -->
+            <div id="console-trigger" class="interactable" style="right: 25%; bottom: 10%; width: 250px; height: 80px; background-color: #4a5568; border-radius: 5px 5px 0 0; transform: perspective(500px) rotateX(20deg);">Panel de Válvulas</div>
+
+            <div class="interactable radio-oculta" style="left: 10%; top: 80%; width: 40px; height: 30px; background-color: #555; border-radius: 4px;">Radio</div>
+        </div>
+
+        <!-- Modal de la Consola Matemática (Fórmulas Borradas de la UI) -->
+        <div id="engine-modal" class="modal hidden">
+            <div class="modal-content" style="width: 450px;">
+                <h3>Calibración del Núcleo</h3>
+                <p>Estabiliza las válvulas de energía calculando los valores correctos basados en los diagramas dispersos en la sala.</p>
+                
+                <div class="engine-panel" style="background-color: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid #334155; margin-top: 15px;">
+                    <!-- Válvula 1 -->
+                    <div class="slider-group" style="margin-bottom: 20px; text-align: left;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Válvula 1</label>
+                        <input type="range" id="slider-v1" min="0" max="100" value="50">
+                        <span id="val-v1" style="float: right; font-weight: bold; color: white; font-family: monospace; font-size: 14px; margin-top: -20px;">50</span>
+                    </div>
+                    
+                    <!-- Válvula 2 -->
+                    <div class="slider-group" style="margin-bottom: 20px; text-align: left;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Válvula 2</label>
+                        <input type="range" id="slider-v2" min="0" max="100" value="50">
+                        <span id="val-v2" style="float: right; font-weight: bold; color: white; font-family: monospace; font-size: 14px; margin-top: -20px;">50</span>
+                    </div>
+                    
+                    <!-- Válvula 3 -->
+                    <div class="slider-group" style="margin-bottom: 20px; text-align: left;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Válvula 3</label>
+                        <input type="range" id="slider-v3" min="0" max="100" value="50">
+                        <span id="val-v3" style="float: right; font-weight: bold; color: white; font-family: monospace; font-size: 14px; margin-top: -20px;">50</span>
+                    </div>
+
+                    <div id="engine-status" style="padding: 10px; text-align: center; font-weight: bold; letter-spacing: 2px; border-radius: 4px; margin-top: 20px; background-color: rgba(239, 68, 68, 0.2); color: var(--color-alert); border: 1px solid var(--color-alert);">FLUJO INESTABLE</div>
+                </div>
+                
+                <button id="btn-close-console" class="btn-close" style="margin-top: 20px; width: 100%;">Alejarse del panel</button>
+            </div>
+        </div>
+    </main>
+
+    <footer id="inventory-bar">
+        <div class="inventory-title">OBJETOS:</div>
+        <div id="inventory-slots" class="slots-container"></div>
+    </footer>
+
+    <script src="../js/engine/gameManager.js"></script>
+    <script src="../js/engine/inventory.js"></script>
+    <script src="../js/rooms/room3.js"></script>
+</body>
+</html>

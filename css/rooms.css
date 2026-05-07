@@ -1,0 +1,649 @@
+/* css/rooms.css */
+
+/* =========================================
+   ESTRUCTURA GENERAL Y CABECERA
+========================================= */
+.room-header {
+    background: #111;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.room-title {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Botón para volver a salas anteriores */
+.btn-back {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: var(--color-primary);
+    color: #000;
+}
+
+.game-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #000;
+}
+
+/* =========================================
+   ENTORNO VISUAL Y OBJETOS GLOBALES
+========================================= */
+
+/* El entorno visual interactivo (Fondo general con Imagen) */
+.room-bg {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 16/9; /* Mantiene proporción estilo pantalla panorámica */
+    background-color: #000; /* Color de respaldo por si no carga la imagen */
+    background-image: url('../assets/img/img_fondo.jpg'); /* Imagen de fondo para todas las salas */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 3px solid #444;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Base para los objetos clicables */
+.interactable {
+    position: absolute;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    transition: all 0.4s ease;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+.interactable:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px var(--color-primary);
+}
+
+/* La Puerta (Unificada para todas las salas usando Imagen) */
+#door, #door-final, #door-escape {
+    right: 5%;
+    bottom: 0;
+    width: 150px;
+    height: 300px;
+    background-color: transparent;
+    background-image: url('../assets/img/img_door.jpg'); /* Imagen de la puerta */
+    background-size: 100% 100%; /* Estira la imagen para que encaje exacto */
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+    color: transparent; /* Oculta el texto original */
+}
+
+/* Brillo cuando la puerta está desbloqueada */
+#door.unlocked, #door-final.unlocked, #door-escape.unlocked {
+    filter: drop-shadow(0 0 15px var(--color-primary));
+}
+
+/* =========================================
+   DECORACIÓN SALA 1 (Imágenes Reales)
+========================================= */
+
+/* El Diploma / Cuadro */
+#painting {
+    left: 20%;
+    top: 25%;
+    width: 180px;
+    height: 120px;
+    background-color: transparent;
+    background-image: url('../assets/img/room1_img_diploma.jpg'); /* Imagen del diploma */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    z-index: 10;
+    transform-origin: top left;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.6);
+    color: transparent;
+}
+
+/* Animación cuando revelamos la nota */
+#painting.moved {
+    transform: rotate(15deg) translate(20px, 10px);
+}
+
+/* La Nota Oculta detrás del cuadro */
+#hidden-note {
+    left: 23%;
+    top: 30%;
+    width: 100px;
+    height: 60px;
+    background-color: #fff9c4;
+    color: black;
+    font-size: 12px;
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#hidden-note.revealed {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* La Caja Fuerte / Panel Numérico */
+#safe {
+    left: 50%;
+    bottom: 10%;
+    width: 120px;
+    height: 120px;
+    background-color: transparent;
+    background-image: url('../assets/img/room1_img_panelnumerico.jpg'); /* Imagen del panel */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+    color: transparent;
+}
+
+
+/* =========================================
+   ESTILOS DE MODALES Y UI
+========================================= */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid #475569;
+}
+
+/* UI Caja Fuerte (Room 1 Modal) */
+#safe-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 24px;
+    text-align: center;
+    background: #0f172a;
+    color: var(--color-primary);
+    border: 1px solid #334155;
+    margin-bottom: 20px;
+    letter-spacing: 5px;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.keypad button {
+    padding: 15px;
+    font-size: 18px;
+    background: #334155;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.keypad button:hover { background: #475569; }
+.keypad .enter { background: var(--color-primary); color: black; }
+.keypad .enter:hover { background: #00cc33; }
+
+
+/* =========================================
+   BARRA DE INVENTARIO
+========================================= */
+#inventory-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background-color: #0f172a;
+    border-top: 2px solid var(--color-primary);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    gap: 20px;
+    z-index: 1000;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+}
+
+.inventory-title {
+    font-weight: bold;
+    color: #64748b;
+    letter-spacing: 2px;
+}
+
+.slots-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    max-width: 100%;
+}
+
+.inventory-slot {
+    width: 50px;
+    height: 50px;
+    background-color: #1e293b;
+    border: 1px dashed #475569;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: default;
+    transition: all 0.3s ease;
+}
+
+.inventory-slot.filled {
+    border: 2px solid var(--color-primary);
+    background-color: #334155;
+    cursor: pointer;
+}
+
+.inventory-slot.filled:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0, 255, 65, 0.2);
+}
+
+.ui-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-primary);
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.ui-notification.show {
+    opacity: 1;
+}
+
+/* =========================================
+   PUZZLE DE MEMORIA (ROOM 2)
+========================================= */
+.memory-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px auto;
+    width: fit-content;
+}
+
+.memory-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    border: 4px solid #111;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+#memory-panel-trigger {
+    background-color: transparent !important;
+    background-image: url('../assets/img/room2_img_panelluces.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: transparent !important; /* Oculta el texto "Panel del Servidor" */
+    border: none !important;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.6) !important;
+}
+
+
+
+#btn-green { background-color: #00ff00; }
+#btn-red { background-color: #ff0000; }
+#btn-yellow { background-color: #ffff00; }
+#btn-blue { background-color: #0088ff; }
+
+.memory-btn.lit {
+    opacity: 1;
+    box-shadow: 0 0 20px currentColor;
+    transform: scale(1.05);
+}
+
+.memory-btn:active {
+    transform: scale(0.95);
+}
+
+.memory-grid.disabled {
+    pointer-events: none;
+}
+
+
+/* =========================================
+   PUZZLE MATEMÁTICO/VÁLVULAS (ROOM 3)
+========================================= */
+.acoustic-panel { 
+    background-color: #0f172a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    margin-top: 15px;
+}
+
+.slider-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.slider-group label {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    margin-top: -8px;
+    box-shadow: 0 0 10px var(--color-primary);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #334155;
+    border-radius: 2px;
+}
+
+.val-display {
+    float: right;
+    font-weight: bold;
+    color: white;
+    font-family: monospace;
+    font-size: 14px;
+    margin-top: -20px;
+}
+
+.status-box {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.status-box.error {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: var(--color-alert);
+    border: 1px solid var(--color-alert);
+}
+
+.status-box.success {
+    background-color: rgba(0, 255, 65, 0.2);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    box-shadow: 0 0 15px var(--color-primary);
+}
+
+/* =========================================
+   DECORACIÓN SALA 3 (Elementos CSS)
+========================================= */
+#grate {
+    background: repeating-linear-gradient(90deg, transparent, transparent 10px, #1a202c 10px, #1a202c 15px),
+                repeating-linear-gradient(0deg, transparent, transparent 10px, #1a202c 10px, #1a202c 15px);
+    background-color: #4a5568;
+    border: 6px solid #2d3748;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.8);
+    color: transparent;
+}
+
+#toolbox {
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    border: 2px solid #922b21;
+    border-top: 15px solid #a93226;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.6);
+    color: transparent;
+}
+
+#toolbox::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    width: 40px;
+    height: 15px;
+    border: 4px solid #bdc3c7;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+}
+
+#terminal {
+    background: radial-gradient(circle, #111, #000);
+    border: 6px solid #333;
+    border-radius: 8px;
+    border-bottom: 12px solid #222;
+    box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.2), 0 10px 20px rgba(0,0,0,0.8);
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 0 5px #00ff41;
+}
+
+#console-trigger {
+    background-color: transparent !important;
+    background-image: url('../assets/img/room3_img_panelvalvulas.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: transparent !important; /* Oculta el texto "Panel de Válvulas" */
+    border: none !important;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.6) !important;
+}
+
+
+/* =========================================
+   PUZZLE DRAG & DROP (ROOM 4)
+========================================= */
+.dnd-interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.pieces-pool {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    min-height: 100px;
+    width: 100%;
+    justify-content: center;
+}
+
+.card-piece {
+    width: 80px;
+    height: 60px;
+    background-image: url('../assets/img/room4_img_tarjeta.jpg'); /* TU ÚNICA IMAGEN AQUÍ */
+    background-size: 160px 120px; /* Obliga a la imagen a tener el tamaño total de las 4 piezas juntas */
+    background-repeat: no-repeat;
+    color: transparent; /* Ocultamos el texto de 'Sup-Izq', etc. */
+    cursor: grab;
+    user-select: none;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease;
+}
+
+.card-piece:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+/* Superior Izquierda (No se desplaza) */
+.piece-tl { 
+    background-position: 0 0; 
+    border-radius: 10px 0 0 0; 
+}
+/* Superior Derecha (Se desplaza 80px a la izquierda) */
+.piece-tr { 
+    background-position: -80px 0; 
+    border-radius: 0 10px 0 0; 
+}
+/* Inferior Izquierda (Se desplaza 60px hacia arriba) */
+.piece-bl { 
+    background-position: 0 -60px; 
+    border-radius: 0 0 0 10px; 
+}
+/* Inferior Derecha (Se desplaza 80px a la izquierda y 60px hacia arriba) */
+.piece-br { 
+    background-position: -80px -60px; 
+    border-radius: 0 0 10px 0; 
+}
+
+/* =========================================
+   DECORACIÓN SALA 4 (Escáner)
+========================================= */
+#scanner-trigger {
+    background-color: transparent !important;
+    background-image: url('../assets/img/room4_img_scanner.jpg') !important;
+    background-size: 100% 100% !important; /* Estira la imagen para que encaje perfecto en el cuadro */
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: transparent !important; /* Oculta el texto "Escáner Dañado" */
+    border: none !important;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.6) !important;
+}
+
+.reader-tray {
+    display: grid;
+    grid-template-columns: 80px 80px;
+    grid-template-rows: 60px 60px;
+    gap: 2px;
+    background-color: #334155;
+    padding: 10px;
+    border-radius: 12px;
+    border: 3px dashed #475569;
+}
+
+.drop-zone {
+    width: 80px;
+    height: 60px;
+    background-color: #1e293b;
+    transition: background-color 0.3s ease;
+}
+
+.drop-zone.drag-over {
+    background-color: rgba(0, 255, 65, 0.3);
+    border: 1px dashed var(--color-primary);
+}
+
+
+/* =========================================
+   DECORACIÓN SALA 5
+========================================= */
+#server-trigger {
+    background: linear-gradient(to right, #0f172a, #1e293b, #0f172a);
+    border: 4px solid #334155;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 15px 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 255, 65, 0.1);
+    color: transparent;
+}
+
+#server-trigger::after {
+    content: '🟢 🔴 🟢 ⚪';
+    position: absolute;
+    top: 20px;
+    font-size: 10px;
+    letter-spacing: 15px;
+    animation: serverBlink 1.5s infinite alternate;
+}
+
+@keyframes serverBlink {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; text-shadow: 0 0 10px white; }
+}
+
+#morse-manual {
+    background: linear-gradient(to right, #e2e8f0, #f8fafc);
+    border: 1px solid #cbd5e1;
+    border-left: 8px solid #ef4444;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
+    color: transparent;
+    background-size: cover;
+}
+
+#morse-manual::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: 2px;
+    height: 90%;
+    width: 3px;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+}
+
+.radio-oculta {
+    background-color: transparent !important;
+    background-image: url('../assets/img/img_radio.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: transparent !important; /* Oculta el texto "Radio" */
+    border: none !important;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.6) !important;
+}

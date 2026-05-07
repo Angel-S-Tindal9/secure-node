@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room - Misión Completada</title>
+    <style>
+        /* Reseteo básico para que ocupe toda la pantalla sin bordes blancos */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden; 
+        }
+
+        /* El fondo del campo */
+        .ending-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('img/img_libre.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1;
+            animation: fadeInBg 3s ease-in forwards;
+        }
+
+        /* Contenedor central superior para oscurecer un poco y que resalte el texto */
+        .ending-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* La palabra LIBERTAD */
+        .libertad-text {
+            font-size: 8vw;
+            font-weight: bold;
+            letter-spacing: 3vw;
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 50px #87ceeb;
+            opacity: 0;
+            margin-right: -3vw; 
+            animation: fadeScaleIn 4s ease-out 1s forwards;
+        }
+
+        /* Estadísticas y Botón de Reinicio */
+        .stats-container {
+            margin-top: 50px;
+            opacity: 0;
+            color: white;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 5px black;
+            animation: fadeInText 3s ease-out 4s forwards; 
+        }
+
+        .btn-restart {
+            margin-top: 30px;
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-restart:hover {
+            background: white;
+            color: black;
+            box-shadow: 0 0 15px white;
+        }
+
+        /* --- DECLARACIÓN DE LAS ANIMACIONES (@keyframes) --- */
+        @keyframes fadeInBg {
+            from { opacity: 0; filter: brightness(0); }
+            to { opacity: 1; filter: brightness(1); }
+        }
+
+        @keyframes fadeScaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ending-bg"></div>
+
+    <div class="ending-content">
+        <div class="libertad-text">LIBERTAD</div>
+        
+        <div class="stats-container">
+            <p>SISTEMA VULNERADO. TIEMPO RESTANTE: <span id="final-time">--:--</span></p>
+            <button class="btn-restart" id="btn-restart">Volver al Menú</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const finalTimeDisplay = document.getElementById('final-time');
+            const btnRestart = document.getElementById('btn-restart');
+            
+            // 1. Leer los datos locales
+            const savedState = localStorage.getItem('escapeGameState');
+            const currentUser = localStorage.getItem('secureNodeUser');
+
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                
+                // Formatear el tiempo para mostrarlo en pantalla (MM:SS)
+                const minutes = Math.floor(state.timeRemaining / 60);
+                const seconds = state.timeRemaining % 60;
+                finalTimeDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                // 2. Si hay un usuario logueado, enviar el récord a la API Express
+                if (currentUser) {
+                    const totalTimeAllowed = 600; // 10 minutos en segundos
+                    
+                    // Cálculo seguro del tiempo usado (evita números negativos)
+                    let timeUsed = totalTimeAllowed - state.timeRemaining;
+                    if (timeUsed < 0) {
+                        timeUsed = Math.abs(timeUsed); 
+                    }
+
+                    console.log("Intentando enviar puntaje:", timeUsed, "segundos");
+
+                    try {
+                        const response = await fetch('http://localhost:3000/api/update-score', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                username: currentUser, 
+                                score: timeUsed
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        console.log("Respuesta del servidor:", data.message);
+                    } catch (error) {
+                        console.error("Error al sincronizar puntaje:", error);
+                    }
+                }
+            }
+
+            // 3. Limpiar progreso del juego (pero NO la sesión del usuario)
+            localStorage.removeItem('escapeGameState');
+
+            // 4. Volver al menú
+            btnRestart.addEventListener('click', () => {
+                window.location.href = '../index.html'; 
+            });
+        });
+    </script>
+</body>
+</html>

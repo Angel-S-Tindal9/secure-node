@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureNode - Escape Room</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <main class="main-menu-container">
+        <h1 class="glitch" data-text="SECURE NODE">SECURE NODE</h1>
+        <p class="subtitle">PROTOCOLO DE AISLAMIENTO ACTIVO</p>
+
+        <nav class="menu-options">
+            <button id="btn-play" class="cyber-btn primary"><span>INICIAR MISIÓN</span></button>
+            
+            <button id="btn-login" class="cyber-btn auth-btn"><span>INICIAR SESIÓN</span></button>
+            <button id="btn-register" class="cyber-btn auth-btn"><span>REGISTRARSE</span></button>
+            
+            <button id="btn-logout" class="cyber-btn hidden"><span>CERRAR SESIÓN</span></button>
+            
+            <button id="btn-leaderboard" class="cyber-btn"><span>PUNTUACIONES</span></button>
+        </nav>
+    </main>
+
+    <div id="modal-login" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2>ACCESO AL SISTEMA</h2>
+            <form id="form-login">
+                <input type="text" placeholder="ID de Usuario" class="cyber-input" required>
+                <input type="password" placeholder="Contraseña" class="cyber-input" required>
+                <button type="submit" class="cyber-btn primary" style="width: 100%;">AUTENTICAR</button>
+            </form>
+            <button class="btn-close-modal">CERRAR</button>
+        </div>
+    </div>
+
+    <div id="modal-register" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2>NUEVO OPERATIVO</h2>
+            <form id="form-register">
+                <input type="text" placeholder="Asignar ID" class="cyber-input" required>
+                <input type="email" placeholder="Correo Encriptado" class="cyber-input" required>
+                <input type="password" placeholder="Clave de Acceso" class="cyber-input" required>
+                <button type="submit" class="cyber-btn primary" style="width: 100%;">CREAR PERFIL</button>
+            </form>
+            <button class="btn-close-modal">CERRAR</button>
+        </div>
+    </div>
+
+    <div id="modal-leaderboard" class="modal hidden">
+        <div class="modal-content glass-panel" style="width: 500px;">
+            <h2>MEJORES TIEMPOS</h2>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>RANGO</th>
+                        <th>OPERATIVO</th>
+                        <th>TIEMPO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+            <button class="btn-close-modal">CERRAR</button>
+        </div>
+    </div>
+
+    <script src="js/engine/index.js"></script>
+</body>
+</html>

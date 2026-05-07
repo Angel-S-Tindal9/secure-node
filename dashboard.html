@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureNode - Panel Principal</title>
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <header class="dash-header">
+        <div class="logo">SecureNode OS</div>
+        <div class="user-profile">
+            <span>Operador en turno: <strong id="display-user">Cargando...</strong></span>
+            <button id="btn-logout" class="btn-logout">Desconectar</button>
+        </div>
+    </header>
+
+    <main class="dash-container">
+        <section class="panel-card">
+            <h1>Centro de Control Organizacional</h1>
+            
+            <div class="system-status">
+                <div class="status-indicator error"></div>
+                <p><strong>ESTADO:</strong> Múltiples fallos detectados. Aislamiento de red activo.</p>
+            </div>
+
+            <p class="mission-briefing">
+                Tu objetivo es acceder a las diferentes salas de la infraestructura, resolver los fallos técnicos y estabilizar el servidor principal antes de que el sistema se bloquee permanentemente.
+            </p>
+
+            <div class="action-menu">
+                <button id="btn-start" class="btn-menu primary">
+                    [ Iniciar Protocolo de Recuperación ]
+                </button>
+                <button id="btn-continue" class="btn-menu secondary" disabled>
+                    [ Continuar Sesión Anterior ]
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts: Primero la sesión, luego el motor, y finalmente la lógica de esta vista -->
+    <script src="js/auth/session.js"></script>
+    <script src="js/engine/gameManager.js"></script>
+    <script src="js/dashboard.js"></script>
+
+</body>
+</html>

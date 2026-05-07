@@ -1,0 +1,262 @@
+
+/* css/index.css */
+
+/* Variables y Reseteo específico para el Menú */
+:root {
+    --color-neon: #00ff41;
+    --color-neon-dim: rgba(0, 255, 65, 0.2);
+    --color-bg-dark: #050b14;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: var(--color-bg-dark);
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Fondo animado de cuadrícula cibernética */
+.cyber-grid {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(var(--color-neon-dim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-neon-dim) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+    animation: gridMove 10s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes gridMove {
+    0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
+    100% { transform: perspective(500px) rotateX(60deg) translateY(40px) translateZ(-200px); }
+}
+
+/* Contenedor Principal */
+.main-menu-container {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    background: rgba(5, 11, 20, 0.8);
+    padding: 50px;
+    border: 1px solid #1a2a3a;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px var(--color-neon-dim);
+    backdrop-filter: blur(5px);
+}
+
+/* Efecto Glitch para el Título */
+.glitch {
+    font-size: 4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: relative;
+    color: white;
+    text-shadow: 0 0 10px var(--color-neon);
+    margin-bottom: 5px;
+    letter-spacing: 5px;
+}
+
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 red;
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 blue;
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 44px, 0); }
+    20% { clip: rect(85px, 9999px, 59px, 0); }
+    40% { clip: rect(15px, 9999px, 90px, 0); }
+    60% { clip: rect(60px, 9999px, 20px, 0); }
+    80% { clip: rect(30px, 9999px, 70px, 0); }
+    100% { clip: rect(5px, 9999px, 80px, 0); }
+}
+
+.subtitle {
+    color: var(--color-neon);
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    font-size: 1.2rem;
+}
+
+/* Botones del Menú */
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px;
+    margin: 0 auto;
+}
+
+.cyber-btn {
+    position: relative;
+    background: transparent;
+    color: #fff;
+    border: 2px solid #1a2a3a;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    font-family: inherit;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.cyber-btn:hover {
+    border-color: var(--color-neon);
+    box-shadow: 0 0 15px var(--color-neon-dim);
+}
+
+.cyber-btn:hover::before {
+    left: 100%;
+}
+
+.cyber-btn.primary {
+    background: rgba(0, 255, 65, 0.1);
+    border-color: var(--color-neon);
+    color: var(--color-neon);
+}
+
+.cyber-btn.primary:hover {
+    background: var(--color-neon);
+    color: #000;
+    box-shadow: 0 0 20px var(--color-neon);
+}
+
+/* =========================================
+   MODALES (VENTANAS EMERGENTES)
+========================================= */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.glass-panel {
+    background: rgba(10, 15, 30, 0.9);
+    padding: 40px;
+    border: 1px solid var(--color-neon);
+    border-radius: 5px;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+    text-align: center;
+    width: 350px;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+.modal.hidden .glass-panel {
+    transform: translateY(50px);
+}
+
+.glass-panel h2 {
+    color: var(--color-neon);
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+/* Inputs de los formularios */
+.cyber-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: #050b14;
+    border: 1px solid #334155;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.cyber-input:focus {
+    border-color: var(--color-neon);
+    box-shadow: inset 0 0 10px var(--color-neon-dim);
+}
+
+/* Botón de cerrar modal */
+.btn-close-modal {
+    margin-top: 20px;
+    background: transparent;
+    color: #ef4444;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-decoration: underline;
+}
+
+.btn-close-modal:hover {
+    color: #fca5a5;
+}
+
+/* Tabla de Puntuaciones */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    padding: 12px;
+    border-bottom: 1px solid #1a2a3a;
+    text-align: left;
+}
+
+.leaderboard-table th {
+    color: var(--color-neon);
+}
+
+.leaderboard-table tr:hover {
+    background: rgba(0, 255, 65, 0.05);
+}

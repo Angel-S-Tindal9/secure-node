@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room 1 - Archivo Organizacional</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/rooms.css">
+</head>
+<body>
+
+    <!-- UI Superior (Título de la sala) -->
+    <header class="room-header">
+        <div class="room-title">SALA 1: ARCHIVO PRINCIPAL</div>
+        <button id="btn-exit-game" class="btn-back" style="border-color: #ef4444; color: #ef4444;">✖ Salir</button>
+    </header>
+
+    <main class="game-area">
+        <!-- El contenedor visual de la habitación -->
+        <div id="room-environment" class="room-bg">
+            
+            <!-- Elementos Interactivos (Posicionados con CSS) -->
+            <div id="door" class="interactable locked">Puerta (Bloqueada)</div>
+            
+            <!-- El cuadro y la nota oculta -->
+            <div id="hidden-note" class="interactable secret-item">Código: 4096</div>
+            <div id="painting" class="interactable">Diploma de la Empresa</div>
+            
+            <!-- La caja fuerte -->
+            <div id="safe" class="interactable">Caja Fuerte</div>
+
+            <div class="interactable radio-oculta" style="left: 10%; top: 80%; width: 40px; height: 30px; background-color: #555; border-radius: 4px;">Radio</div>
+
+        </div>
+
+        <!-- Modal del panel numérico de la caja fuerte (Oculto por defecto) -->
+        <div id="keypad-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Panel de Seguridad</h3>
+                <input type="text" id="safe-input" placeholder="****" readonly>
+                <div class="keypad">
+                    <button class="key-num">1</button><button class="key-num">2</button><button class="key-num">3</button>
+                    <button class="key-num">4</button><button class="key-num">5</button><button class="key-num">6</button>
+                    <button class="key-num">7</button><button class="key-num">8</button><button class="key-num">9</button>
+                    <button id="btn-clear" class="key-action">C</button>
+                    <button class="key-num">0</button>
+                    <button id="btn-enter" class="key-action enter">OK</button>
+                </div>
+                <button id="btn-close-modal" class="btn-close">Cerrar</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Barra de Inventario (Fija en la parte inferior) -->
+    <footer id="inventory-bar">
+        <div class="inventory-title">OBJETOS:</div>
+        <div id="inventory-slots" class="slots-container">
+            <!-- Los slots se generan dinámicamente con inventory.js -->
+        </div>
+    </footer>
+
+    <!-- Scripts (El orden es muy importante) -->
+    <script src="../js/engine/gameManager.js"></script>
+    <script src="../js/engine/inventory.js"></script>
+    <script src="../js/rooms/room1.js"></script>
+</body>
+</html>
