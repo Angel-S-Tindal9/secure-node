@@ -175,3 +175,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// =========================================================
+// PUENTE DE COMPATIBILIDAD CON EL CÓDIGO ANTERIOR DE LAS SALAS
+// =========================================================
+const Inventory = {
+    // Intercepta la orden antigua y la adapta al nuevo panel oscuro
+    addItem: function(id, desc, icon) {
+        
+        // Si el objeto que recoges no está en tu diccionario (itemDatabase), lo crea al vuelo
+        if (typeof itemDatabase !== 'undefined' && !itemDatabase[id]) {
+            itemDatabase[id] = {
+                name: 'Objeto Encontrado: ' + id,
+                img: '', // Deja vacío si no tienes imagen, no pasa nada
+                desc: desc || 'Objeto sin descripción detallada.'
+            };
+        }
+        
+        // Llama a la nueva función
+        if (typeof addToInventory === 'function') {
+            addToInventory(id);
+        }
+    },
+    
+    // Por si algún otro archivo intenta renderizarlo a la antigua
+    renderInventory: function() {
+        if (typeof renderInventory === 'function') renderInventory();
+    }
+};

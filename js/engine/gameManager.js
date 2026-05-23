@@ -14,7 +14,7 @@ const GameManager = {
     init: function() {
         this.loadProgress();
         this.startTimer();
-        this.renderInventory();
+        renderInventory();
     },
 
     saveProgress: function() {
