@@ -1,104 +1,177 @@
-// js/engine/inventory.js
+/**
+ * ==========================================
+ * SECURENODE - SISTEMA DE INVENTARIO
+ * ==========================================
+ * Este archivo maneja la persistencia de datos (localStorage),
+ * la adición de objetos y la inspección dinámica (Panel de Detalles).
+ */
 
-const Inventory = {
-    maxSlots: 10, // Inventario ampliado a 10 espacios
-
-    // Función segura para leer siempre el estado actual guardado
-    getItems: function() {
-        if (typeof GameManager !== 'undefined' && GameManager.state && GameManager.state.inventory) {
-            return GameManager.state.inventory;
-        }
-        return [];
-    },
-
-    init: function() {
-        this.render();
-    },
-
-    addItem: function(id, name, icon) {
-        let items = this.getItems();
-        
-        // 1. Evitar duplicados ESTRICTAMENTE verificando el ID
-        if (!items.some(item => item.id === id)) {
-            
-            // 2. Verificar el límite de espacio
-            if (items.length < this.maxSlots) {
-                items.push({ id, name, icon });
-                
-                // 3. Guardar forzosamente en el GameManager
-                if (typeof GameManager !== 'undefined') {
-                    GameManager.state.inventory = items;
-                    GameManager.saveProgress();
-                }
-                
-                this.render();
-                this.showNotification(`Has recogido: ${name}`);
-            } else {
-                this.showNotification("El inventario está lleno.");
-            }
-        } else {
-            console.log("El objeto ya está en el inventario.");
-        }
-    },
-
-    removeItem: function(id) {
-        let items = this.getItems();
-        items = items.filter(item => item.id !== id);
-        
-        if (typeof GameManager !== 'undefined') {
-            GameManager.state.inventory = items;
-            GameManager.saveProgress();
-        }
-        this.render();
-    },
-
-    hasItem: function(id) {
-        return this.getItems().some(item => item.id === id);
-    },
-
-    render: function() {
-        const container = document.getElementById('inventory-slots');
-        if (!container) return;
-
-        container.innerHTML = ''; 
-        const items = this.getItems();
-
-        // Dibujar objetos reales
-        items.forEach(item => {
-            const slot = document.createElement('div');
-            slot.className = 'inventory-slot filled';
-            slot.innerHTML = item.icon; 
-            slot.title = item.name; 
-            
-            slot.addEventListener('click', () => {
-                alert(`Examinando: ${item.name}`);
-            });
-            
-            container.appendChild(slot);
-        });
-
-        // Dibujar casillas vacías restantes hasta llegar al límite (10)
-        for (let i = items.length; i < this.maxSlots; i++) {
-            const emptySlot = document.createElement('div');
-            emptySlot.className = 'inventory-slot';
-            container.appendChild(emptySlot);
-        }
-    },
-
-    showNotification: function(message) {
-        const notif = document.createElement('div');
-        notif.className = 'ui-notification';
-        notif.innerText = message;
-        document.body.appendChild(notif);
-
-        setTimeout(() => notif.classList.add('show'), 10);
-        setTimeout(() => {
-            notif.classList.remove('show');
-            setTimeout(() => notif.remove(), 500);
-        }, 3000);
-    }
+// 1. ESTADO GLOBAL DEL JUEGO
+// Inicializamos el objeto vacío por defecto
+let gameState = {
+    inventory: [],
+    timeRemaining: 600, // 10 minutos (600 segundos) por defecto
+    room1Solved: false,
+    room2Solved: false,
+    room3Solved: false,
+    room4Solved: false
 };
 
+// Intentamos recuperar el estado guardado al recargar o cambiar de sala
+const savedState = localStorage.getItem('escapeGameState');
+if (savedState) {
+    gameState = JSON.parse(savedState);
+    // Aseguramos que el inventario sea un array válido aunque haya errores previos
+    if (!Array.isArray(gameState.inventory)) {
+        gameState.inventory = [];
+    }
+}
+
+// Función auxiliar para guardar el estado actual en el navegador
+function saveGameState() {
+    localStorage.setItem('escapeGameState', JSON.stringify(gameState));
+}
+
+// 2. DICCIONARIO DE OBJETOS (BASE DE DATOS LOCAL)
+// Aquí defines todos los objetos que pueden existir en el Escape Room
+const itemDatabase = {
+    'diploma': {
+        name: 'Diploma Académico',
+        img: '../img/room1_img_diploma.jpg', 
+        desc: 'Un antiguo diploma de ingeniería. Al reverso, alguien ha escrito números con tinta invisible: 8 - 3 - 2.'
+    },
+    'radio_pilas': {
+        name: 'Radio a Pilas Antigua',
+        img: '../img/radio_static.png', 
+        desc: 'Una radio vieja. Sintoniza una frecuencia extraña (98.5 FM) donde solo se escucha estática y un patrón rítmico.'
+    },
+    'llave_servidor': {
+        name: 'Llave Encriptada',
+        img: '../img/llave_usb.png',
+        desc: 'Un pendrive de seguridad metálico. Contiene la clave asimétrica para desencriptar el terminal de la Sala 3.'
+    },
+    'tarjeta_roja': {
+        name: 'Tarjeta de Acceso - Nivel 1',
+        img: '../img/room4_img_tarjeta_final.png', 
+        desc: 'Una tarjeta de acceso magnética de color rojo. Parece estar completamente operativa tras ensamblar sus fragmentos.'
+    },
+
+    'nota_codigo': { // Asegúrate de que este ID coincida con el que usas al guardarlo
+        name: 'Nota de Acceso',
+        img: '../img/nota_codigo.png', // Pon la ruta de la imagen de tu nota
+        desc: 'Una nota vieja y arrugada con instrucciones garabateadas a toda prisa. Al final del texto, resalta un número: 4096. Parece ser un código de anulación del servidor.'
+    }
+    // Puedes añadir más objetos aquí separándolos con comas
+};
+
+
+// 3. FUNCIONES LÓGICAS DEL INVENTARIO
+
+/**
+ * Añade un objeto al inventario si no existe previamente
+ * @param {string} itemId - El ID del objeto (ej: 'diploma')
+ */
+function addToInventory(itemId) {
+    if (!gameState.inventory.includes(itemId)) {
+        gameState.inventory.push(itemId);
+        saveGameState(); // Guardar el progreso
+        renderInventory(); // Actualizar la interfaz visual
+        console.log(`[Sistema] Objeto añadido: ${itemId}`);
+    }
+}
+
+/**
+ * Comprueba si el jugador tiene un objeto específico
+ * @param {string} itemId - El ID del objeto a buscar
+ * @returns {boolean}
+ */
+function hasItem(itemId) {
+    return gameState.inventory.includes(itemId);
+}
+
+
+// 4. FUNCIONES DE INTERFAZ GRÁFICA (UI)
+
+/**
+ * Dibuja los íconos en la barra inferior del HTML
+ */
+function renderInventory() {
+    const inventoryContainer = document.getElementById('inventory-bar');
+    
+    // Si no existe la barra en el HTML actual, detenemos la función
+    if (!inventoryContainer) return;
+    
+    // Limpiamos la barra antes de volver a dibujar
+    inventoryContainer.innerHTML = ''; 
+    
+    // Recorremos los objetos que tiene el jugador
+    gameState.inventory.forEach(itemId => {
+        const itemData = itemDatabase[itemId];
+        
+        // Medida de seguridad por si hay un ID que no está en el diccionario
+        if (!itemData) return; 
+
+        // Crear el contenedor del ícono
+        const itemIcon = document.createElement('div');
+        itemIcon.className = 'inventory-icon';
+        
+        // Aplicar la imagen de fondo (Asegúrate de tener un CSS para .inventory-icon)
+        itemIcon.style.backgroundImage = `url('${itemData.img}')`;
+        itemIcon.style.backgroundSize = 'cover';
+        itemIcon.style.backgroundPosition = 'center';
+        
+        // Añadir el evento de clic para abrir el nuevo Panel de Detalles
+        itemIcon.addEventListener('click', () => {
+            showItemDetails(itemId);
+        });
+        
+        // Insertar el ícono en la barra
+        inventoryContainer.appendChild(itemIcon);
+    });
+}
+
+
+// 5. LÓGICA DEL PANEL DE DETALLES (INSPECCIÓN)
+
+/**
+ * Extrae los datos del diccionario y los pinta en el panel flotante
+ * @param {string} itemId - El ID del objeto clickeado
+ */
+function showItemDetails(itemId) {
+    const detailsPanel = document.getElementById('item-details-panel');
+    const itemData = itemDatabase[itemId];
+    
+    // Validar que el panel exista en el HTML y que el objeto sea válido
+    if (!detailsPanel || !itemData) {
+        console.error("Error: Falta el panel en el HTML o el objeto no existe.");
+        return;
+    }
+    
+    // Insertar la información dinámica
+    document.getElementById('detail-item-image').src = itemData.img;
+    document.getElementById('detail-item-name').innerText = itemData.name;
+    document.getElementById('detail-item-description').innerText = itemData.desc;
+    
+    // Mostrar el panel quitando la clase 'hidden'
+    detailsPanel.classList.remove('hidden');
+}
+
+
+// 6. INICIALIZACIÓN AUTOMÁTICA
+// Este bloque se ejecuta en cuanto la página termina de cargar
 document.addEventListener('DOMContentLoaded', () => {
-    Inventory.init();
+    
+    // 1. Pintar el inventario inicial
+    renderInventory();
+    
+    // 2. Configurar el botón de cerrar del Panel de Detalles
+    const closeBtn = document.getElementById('close-details-btn');
+    const detailsPanel = document.getElementById('item-details-panel');
+    
+    if (closeBtn && detailsPanel) {
+        closeBtn.addEventListener('click', () => {
+            // Volver a añadir la clase 'hidden' para ocultarlo
+            detailsPanel.classList.add('hidden'); 
+        });
+    }
 });
