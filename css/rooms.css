@@ -48,6 +48,80 @@
    ENTORNO VISUAL Y OBJETOS GLOBALES
 ========================================= */
 
+/* === ESTILOS DEL PANEL DE DETALLES (rooms.css) === */
+
+#item-details-panel {
+    position: fixed;
+    top: 50%; /* Centrado en pantalla */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%; /* Ocupa el 60% del ancho */
+    height: 50vh; /* Ocupa el 50% del alto de pantalla */
+    background-color: rgba(10, 10, 15, 0.95); /* Fondo oscuro semi-transparente */
+    border: 2px solid #00ff41; /* Borde neón */
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+    z-index: 1000; /* Asegurar que esté sobre todo */
+    display: flex; /* Dividir en columnas */
+    border-radius: 8px;
+    overflow: hidden; /* Cortar contenido que sobresalga */
+}
+
+/* Ocultar el panel cuando no se usa */
+#item-details-panel.hidden {
+    display: none;
+}
+
+/* Columna Izquierda: Visualización (Imagen) */
+.item-detail-visual {
+    flex: 1; /* Ocupa la mitad */
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-right: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+#detail-item-image {
+    max-width: 90%;
+    max-height: 90%;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.7)); /* Brillo neón a la imagen */
+    object-fit: contain;
+}
+
+/* Columna Derecha: Contenido (Texto) */
+.item-detail-content {
+    flex: 1; /* Ocupa la otra mitad */
+    padding: 30px;
+    color: white;
+    font-family: 'Courier New', monospace; /* Tipografía técnica */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Botón abajo */
+}
+
+#detail-item-name {
+    color: #00ff41; /* Título en neón */
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #00ff41;
+    padding-bottom: 10px;
+}
+
+#detail-item-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-top: 20px;
+    flex-grow: 1; /* Ocupa espacio disponible */
+}
+
+/* Botón de cerrar (Usando tu estilo de botones .secure-btn) */
+#close-details-btn {
+    align-self: flex-end; /* A la derecha */
+    margin-top: 20px;
+}
+
 /* El entorno visual interactivo (Fondo general con Imagen) */
 .room-bg {
     position: relative;
