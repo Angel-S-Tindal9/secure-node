@@ -726,9 +726,11 @@ input[type=range]::-webkit-slider-runnable-track {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px; /* Espacio entre objetos */
-    height: 100%; 
+    gap: 15px; 
+    /* height: 100%; <-- ¡BORRA O CAMBIA ESTO! */
+    min-height: 80px; /* Le damos una altura fija para que no invada la pantalla */
     padding: 10px;
+    width: 100%;
 }
 
 /* CAJITAS DE LOS OBJETOS (ÍCONOS) */
