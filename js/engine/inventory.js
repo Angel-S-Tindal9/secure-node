@@ -86,24 +86,24 @@ const itemDatabase = {
 
     'morse_1': {
         name: 'Transmisión de Radio',
-        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        img: '../assets/img/radio_static.jpg', // Usa la imagen de tu radio
         desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
     },
     'morse_2': {
         name: 'Transmisión de Radio',
-        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        img: '../assets/img/radio_static.jpg', // Usa la imagen de tu radio
         desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
     },
 
     'morse_3': {
         name: 'Transmisión de Radio',
-        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        img: '../assets/img/radio_static.jpg', // Usa la imagen de tu radio
         desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
     },
 
     'morse_4': {
         name: 'Transmisión de Radio',
-        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        img: '../assets/img/radio_static.jpg', // Usa la imagen de tu radio
         desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
     }
     // Puedes añadir más objetos aquí separándolos con comas
