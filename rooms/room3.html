@@ -14,6 +14,16 @@
         .secret-clue.revealed { opacity: 1; pointer-events: auto; }
     </style>
 </head>
+<div id="item-details-panel" class="hidden">
+    <div class="item-detail-visual">
+        <img id="detail-item-image" src="" alt="Visualización">
+    </div>
+    <div class="item-detail-content">
+        <h3 id="detail-item-name">Nombre</h3>
+        <p id="detail-item-description">Descripción</p>
+        <button id="close-details-btn" class="secure-btn">Cerrar</button>
+    </div>
+</div>
 <body>
 
     <header class="room-header">
@@ -83,6 +93,17 @@
         </div>
     </main>
 
+    <div id="item-details-panel" class="hidden">
+        <div class="item-detail-visual">
+            <img id="detail-item-image" src="" alt="Visualización">
+        </div>
+        <div class="item-detail-content">
+            <h3 id="detail-item-name">Nombre</h3>
+            <p id="detail-item-description">Descripción</p>
+            <button id="close-details-btn" class="secure-btn">Cerrar</button>
+        </div>
+    </div>
+
     <footer id="inventory-bar">
         <div class="inventory-title">OBJETOS:</div>
         <div id="inventory-slots" class="slots-container"></div>
@@ -91,5 +112,6 @@
     <script src="../js/engine/gameManager.js"></script>
     <script src="../js/engine/inventory.js"></script>
     <script src="../js/rooms/room3.js"></script>
+
 </body>
 </html>
