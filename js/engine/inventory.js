@@ -180,11 +180,31 @@ document.addEventListener('DOMContentLoaded', () => {
 // PUENTE DE COMPATIBILIDAD CON EL CÓDIGO ANTERIOR DE LAS SALAS
 // =========================================================
 const Inventory = {
+    // 1. Para cuando la sala intenta darte un objeto
     addItem: function(id, desc, icon) {
         if (typeof itemDatabase !== 'undefined' && !itemDatabase[id]) {
-            itemDatabase[id] = { name: 'Objeto: ' + id, img: '', desc: desc };
+            itemDatabase[id] = {
+                name: 'Objeto Encontrado: ' + id,
+                img: '', 
+                desc: desc || 'Objeto sin descripción detallada.'
+            };
         }
-        if (typeof addToInventory === 'function') addToInventory(id);
+        if (typeof addToInventory === 'function') {
+            addToInventory(id);
+        }
     },
-    renderInventory: function() {}
+    
+    // 2. Para cuando la sala intenta dibujar el inventario
+    renderInventory: function() {
+        if (typeof renderInventory === 'function') renderInventory();
+    },
+
+    // 3. ¡NUEVO! Para cuando la sala pregunta si tienes un objeto (El error de Room 2)
+    hasItem: function(id) {
+        // Llama a la nueva función global hasItem() que creamos arriba
+        if (typeof hasItem === 'function') {
+            return hasItem(id);
+        }
+        return false;
+    }
 };
