@@ -37,28 +37,28 @@ function saveGameState() {
 const itemDatabase = {
     'diploma': {
         name: 'Diploma Académico',
-        img: '../img/room1_img_diploma.jpg', 
+        img: '../assests/img/room1_img_diploma.jpg', 
         desc: 'Un antiguo diploma de ingeniería. Al reverso, alguien ha escrito números con tinta invisible: 8 - 3 - 2.'
     },
     'radio_pilas': {
         name: 'Radio a Pilas Antigua',
-        img: '../img/radio_static.png', 
+        img: '../assets/img/radio_static.jpg', 
         desc: 'Una radio vieja. Sintoniza una frecuencia extraña (98.5 FM) donde solo se escucha estática y un patrón rítmico.'
     },
     'llave_servidor': {
         name: 'Llave Encriptada',
-        img: '../img/llave_usb.png',
+        img: '../assets/img/llave_usb.jpg',
         desc: 'Un pendrive de seguridad metálico. Contiene la clave asimétrica para desencriptar el terminal de la Sala 3.'
     },
     'tarjeta_roja': {
         name: 'Tarjeta de Acceso - Nivel 1',
-        img: '../img/room4_img_tarjeta_final.png', 
+        img: '../assets/img/room4_img_tarjeta_final.jpg', 
         desc: 'Una tarjeta de acceso magnética de color rojo. Parece estar completamente operativa tras ensamblar sus fragmentos.'
     },
 
     'nota_codigo': { // Asegúrate de que este ID coincida con el que usas al guardarlo
         name: 'Nota de Acceso',
-        img: '../img/nota_codigo.png', // Pon la ruta de la imagen de tu nota
+        img: '../assets/img/nota_codigo.jpg', // Pon la ruta de la imagen de tu nota
         desc: 'Una nota vieja y arrugada con instrucciones garabateadas a toda prisa. Al final del texto, resalta un número: 4096. Parece ser un código de anulación del servidor.'
     }
     // Puedes añadir más objetos aquí separándolos con comas
@@ -180,26 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // PUENTE DE COMPATIBILIDAD CON EL CÓDIGO ANTERIOR DE LAS SALAS
 // =========================================================
 const Inventory = {
-    // Intercepta la orden antigua y la adapta al nuevo panel oscuro
     addItem: function(id, desc, icon) {
-        
-        // Si el objeto que recoges no está en tu diccionario (itemDatabase), lo crea al vuelo
         if (typeof itemDatabase !== 'undefined' && !itemDatabase[id]) {
-            itemDatabase[id] = {
-                name: 'Objeto Encontrado: ' + id,
-                img: '', // Deja vacío si no tienes imagen, no pasa nada
-                desc: desc || 'Objeto sin descripción detallada.'
-            };
+            itemDatabase[id] = { name: 'Objeto: ' + id, img: '', desc: desc };
         }
-        
-        // Llama a la nueva función
-        if (typeof addToInventory === 'function') {
-            addToInventory(id);
-        }
+        if (typeof addToInventory === 'function') addToInventory(id);
     },
-    
-    // Por si algún otro archivo intenta renderizarlo a la antigua
-    renderInventory: function() {
-        if (typeof renderInventory === 'function') renderInventory();
-    }
+    renderInventory: function() {}
 };
