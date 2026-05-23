@@ -721,3 +721,32 @@ input[type=range]::-webkit-slider-runnable-track {
     border: none !important;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.6) !important;
 }
+/* ESTILOS DE LA BARRA DE INVENTARIO */
+#inventory-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Espacio entre objetos */
+    height: 100%; 
+    padding: 10px;
+}
+
+/* CAJITAS DE LOS OBJETOS (ÍCONOS) */
+.inventory-icon {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+    border: 2px solid #00ff41; /* Borde neón */
+    border-radius: 8px;
+    cursor: pointer;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Efecto al pasar el mouse por encima */
+.inventory-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+}
