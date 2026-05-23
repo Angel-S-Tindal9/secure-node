@@ -60,6 +60,51 @@ const itemDatabase = {
         name: 'Nota de Acceso',
         img: '../assets/img/nota_codigo.jpg', // Pon la ruta de la imagen de tu nota
         desc: 'Una nota vieja y arrugada con instrucciones garabateadas a toda prisa. Al final del texto, resalta un número: 4096. Parece ser un código de anulación del servidor.'
+    },
+
+    // --- OBJETOS DE LA SALA 3 ---
+    'nota_vars': {
+        name: 'Variables del Sistema',
+        img: '../assets/img/nota_codigo.jpg', // Reemplaza con la ruta de tu imagen
+        desc: 'VARIABLES DEL SISTEMA:\nX = 20\nY = 2\nZ = 30\n(Faltan las instrucciones de las válvulas)'
+    },
+    'clue_v1': {
+        name: 'Fórmula Válvula 1',
+        img: '../assets/img/nota_codigo.jpg', 
+        desc: 'Un papel arrugado: "Fórmula de Válvula 1: X + Y * Z"'
+    },
+    'clue_v2': {
+        name: 'Registro de Error Válvula 2',
+        img: '../assets/img/nota_codigo.jpg', 
+        desc: 'Registro del monitor: "ERROR EN VÁLVULA 2. CALIBRACIÓN: X * Y - Z"'
+    },
+    'clue_v3': {
+        name: 'Plano Válvula 3',
+        img: '../assets/img/nota_codigo.jpg', 
+        desc: 'Un plano esquemático: "Configuración Válvula 3: X / Y + Z"'
+    },
+
+    'morse_1': {
+        name: 'Transmisión de Radio',
+        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
+    },
+    'morse_2': {
+        name: 'Transmisión de Radio',
+        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
+    },
+
+    'morse_3': {
+        name: 'Transmisión de Radio',
+        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
+    },
+
+    'morse_4': {
+        name: 'Transmisión de Radio',
+        img: '../img/radio_static.jpg', // Usa la imagen de tu radio
+        desc: 'La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )'
     }
     // Puedes añadir más objetos aquí separándolos con comas
 };
