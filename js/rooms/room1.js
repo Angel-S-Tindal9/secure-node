@@ -19,7 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnExit) {
         btnExit.addEventListener('click', () => {
-            if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso no guardado.")) {
+            if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso actual.")) {
+                
+                // ¡LA OPCIÓN NUCLEAR PARA BORRAR EL PROGRESO AL SALIR!
+                if(typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('escapeGameState'); 
+                    sessionStorage.removeItem('secureNodeInventory'); 
+                    // Opcionalmente, puedes usar sessionStorage.clear(); para borrar absolutamente todo.
+                }
+
+                // Ahora sí, redirigimos al menú principal
                 window.location.href = '../index.html';
             }
         });
