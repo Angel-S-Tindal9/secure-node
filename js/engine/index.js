@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('secureNodeUser');
         // También limpiamos el progreso del juego por seguridad si cierran sesión
         localStorage.removeItem('escapeGameState');
+        localStorage.removeItem('secureNodeInventory');
         alert("Sesión finalizada. Conexión cerrada.");
         checkLoginStatus();
     });
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // INICIAR MISIÓN (Redirige a la Sala 1)
     btnPlay.addEventListener('click', () => {
+        localStorage.removeItem('secureNodeInventory');
         window.location.href = 'rooms/room1.html';
     });
 
@@ -140,13 +142,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 alert(`Acceso Concedido. Bienvenido operativo ${data.username}`);
 
-                checkLoginStatus();
                 
                 // Guardar el nombre de usuario para el registro final de tiempo
                 localStorage.setItem('secureNodeUser', data.username);
                 
                 modalLogin.classList.add('hidden');
                 e.target.reset();
+                checkLoginStatus();
+
             } else {
                 alert("Acceso Denegado: " + data.error);
             }
