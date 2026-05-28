@@ -9,14 +9,14 @@
 let miInventario = [];
 
 // Recuperar objetos al cambiar de sala
-const inventarioGuardado = localStorage.getItem('secureNodeInventory');
+const inventarioGuardado = sessionStorage.getItem('secureNodeInventory');
 if (inventarioGuardado) {
     miInventario = JSON.parse(inventarioGuardado);
 }
 
 // Función para guardar en la nueva caja
 function saveInventory() {
-    localStorage.setItem('secureNodeInventory', JSON.stringify(miInventario));
+    sessionStorage.setItem('secureNodeInventory', JSON.stringify(miInventario));
 }
 
 
