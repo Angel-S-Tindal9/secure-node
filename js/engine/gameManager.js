@@ -17,12 +17,14 @@ const GameManager = {
     },
 
     saveProgress: function() {
-        localStorage.setItem('escapeGameState', JSON.stringify(this.state));
+        // CAMBIO 1: Usamos sessionStorage en lugar de localStorage
+        sessionStorage.setItem('escapeGameState', JSON.stringify(this.state));
         console.log("Progreso guardado automáticamente.");
     },
 
     loadProgress: function() {
-        const saved = localStorage.getItem('escapeGameState');
+        // CAMBIO 2: Usamos sessionStorage en lugar de localStorage
+        const saved = sessionStorage.getItem('escapeGameState');
         if (saved) {
             this.state = JSON.parse(saved);
         }
@@ -31,7 +33,12 @@ const GameManager = {
     addItem: function(item) {
         if (!this.state.inventory.includes(item)) {
             this.state.inventory.push(item);
-            this.renderInventory();
+            
+            // CAMBIO 3: Quitamos el "this." para que llame al nuevo inventory.js correctamente
+            if (typeof renderInventory === 'function') {
+                renderInventory(); 
+            }
+            
             this.saveProgress();
         }
     },
@@ -61,7 +68,6 @@ const GameManager = {
         // Lógica de reinicio o pantalla de fallo
     },
 
-    // Agrega esto dentro del objeto GameManager en gameManager.js
     resetProgress: function() {
         this.state = {
             currentRoom: 'room1',
@@ -69,6 +75,11 @@ const GameManager = {
             inventory: [],
             flags: {}
         };
+        
+        // CAMBIO 4: Destruir tanto la partida como la nueva caja fuerte del inventario
+        sessionStorage.removeItem('escapeGameState');
+        sessionStorage.removeItem('secureNodeInventory');
+        
         this.saveProgress();
     }
 };
@@ -77,5 +88,3 @@ const GameManager = {
 document.addEventListener('DOMContentLoaded', () => {
     GameManager.init();
 });
-
-
