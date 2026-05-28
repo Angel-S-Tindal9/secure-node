@@ -88,3 +88,15 @@ const GameManager = {
 document.addEventListener('DOMContentLoaded', () => {
     GameManager.init();
 });
+
+window.salirDelJuego = function(rutaInicio) {
+    const confirmar = confirm("¿Estás seguro de que deseas abandonar la misión? Se perderá todo el progreso actual.");
+    
+    if (confirmar) {
+        // La opción nuclear: Borra absolutamente TODO lo que haya en la memoria temporal
+        sessionStorage.clear(); 
+        
+        // Redirige al jugador al menú principal
+        window.location.href = rutaInicio || '../index.html'; 
+    }
+};
