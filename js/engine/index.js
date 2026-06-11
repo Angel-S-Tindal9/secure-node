@@ -199,3 +199,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+function cargarMejoresTiempos() {
+    // Busca el contenedor donde van las filas (asegúrate de tener un <tbody> o un <div> con este ID)
+    const contenedorRanking = document.getElementById('tabla-ranking-body');
+    if (!contenedorRanking) return;
+    
+    // Obtenemos los datos que guardamos en Room 5
+    const ranking = JSON.parse(localStorage.getItem('secureNodeRanking')) || [];
+    
+    // Limpiamos el contenido estático previo
+    contenedorRanking.innerHTML = '';
+    
+    // Si no hay nadie, mostramos un mensaje
+    if (ranking.length === 0) {
+        contenedorRanking.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay registros operativos aún.</td></tr>';
+        return;
+    }
+    
+    // Mostramos solo el Top 5
+    const top5 = ranking.slice(0, 5);
+    
+    top5.forEach((registro, index) => {
+        const fila = document.createElement('tr');
+        
+        // Estructura de tu tabla
+        fila.innerHTML = `
+            <td>#${index + 1}</td>
+            <td style="color: var(--color-primary);">${registro.nombre}</td>
+            <td>${registro.tiempoMostrado}</td>
+        `;
+        
+        contenedorRanking.appendChild(fila);
+    });
+}
+
+// Llama a esta función cuando cargue la página principal
+document.addEventListener('DOMContentLoaded', () => {
+    cargarMejoresTiempos();
+});
