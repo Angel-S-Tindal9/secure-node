@@ -22,15 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         doorEscape.innerText = "ESCAPAR";
     }
 
-    const btnExit = document.getElementById('btn-exit-game');
-        if (btnExit) {
-            btnExit.addEventListener('click', () => {
-                if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso no guardado.")) {
-                    window.location.href = '../index.html';
-                }
-            });
-        }
-
     // --- INTERACCIÓN CON EL ENTORNO ---
     scannerTrigger.addEventListener('click', () => {
         if(!isScannerUnlocked) {
