@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tiempoTexto = `${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
                 
                 // Buscamos el nombre del jugador en el caché (debe coincidir con tu sistema de login)
-                const jugador = localStorage.getItem('usuarioActual') || 'Operativo Anónimo';
+                const jugador = localStorage.getItem('secureNodeUser') || 'Operativo Anónimo';
                 
                 // Traemos la tabla de puntuaciones (o creamos una si no existe)
                 let ranking = JSON.parse(localStorage.getItem('secureNodeRanking')) || [];
