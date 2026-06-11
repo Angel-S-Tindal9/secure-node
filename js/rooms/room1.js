@@ -9,30 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('keypad-modal');
     const door = document.getElementById('door');
     const safeInput = document.getElementById('safe-input');
-    const btnExit = document.getElementById('btn-exit-game');
 
     
     // Variables de estado de la habitación
     let isDoorUnlocked = false;
     const correctCode = "4096"; // Código que aparece en la nota
     let currentInput = "";
-
-    if (btnExit) {
-        btnExit.addEventListener('click', () => {
-            if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso actual.")) {
-                
-                // ¡LA OPCIÓN NUCLEAR PARA BORRAR EL PROGRESO AL SALIR!
-                if(typeof sessionStorage !== 'undefined') {
-                    sessionStorage.removeItem('escapeGameState'); 
-                    sessionStorage.removeItem('secureNodeInventory'); 
-                    // Opcionalmente, puedes usar sessionStorage.clear(); para borrar absolutamente todo.
-                }
-
-                // Ahora sí, redirigimos al menú principal
-                window.location.href = '../index.html';
-            }
-        });
-    }
 
     if (typeof GameManager !== 'undefined' && GameManager.state.flags.room1Solved) {
         isDoorUnlocked = true;
@@ -139,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (radioClicks < 5) {
             console.log(`Clics en radio: ${radioClicks}/5`); // Pista en consola para los curiosos
         } else if (radioClicks === 5) {
-            alert("La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )");
+            mostrarAlerta("La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )");
             Inventory.addItem('morse_1', 'Señal 1: ....', '📻');
             e.target.style.display = 'none';
         }
