@@ -14,10 +14,26 @@ const GameManager = {
     init: function() {
         this.loadProgress();
         this.startTimer();
-        this.setupExitButton(); // 👈 El GameManager ahora toma el control del botón de salida
+        this.setupExitButton();
+        this.setupOrientationLock();
     },
 
-    // 🏆 FUNCIÓN MAESTRA PARA CONTROLAR EL BOTÓN DE SALIDA EN CUALQUIER SALA
+    setupOrientationLock: function() {
+        let lockScreen = document.getElementById('orientation-lock');
+        if (!lockScreen) {
+            lockScreen = document.createElement('div');
+            lockScreen.id = 'orientation-lock';
+            lockScreen.innerHTML = `
+                <div class="icon-rotate">📱</div>
+                <h2 style="letter-spacing: 2px;">GIRA TU DISPOSITIVO</h2>
+                <p style="color: white; line-height: 1.5; margin-top: 10px;">Esta misión táctica requiere un monitor panorámico.<br>Por favor, rota tu pantalla a modo horizontal para continuar.</p>
+            `;
+            // Lo ponemos al principio del body
+            document.body.prepend(lockScreen);
+        }
+    },
+
+    // FUNCIÓN MAESTRA PARA CONTROLAR EL BOTÓN DE SALIDA EN CUALQUIER SALA
     setupExitButton: function() {
         const btnExit = document.getElementById('btn-exit-game');
         
