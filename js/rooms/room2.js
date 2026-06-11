@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(!isPanelUnlocked) {
                 modal?.classList.remove('hidden');
             } else {
-                alert("El panel ya ha sido anulado. La puerta está abierta.");
+                mostrarAlerta("El panel ya ha sido anulado. La puerta está abierta.");
             }
         });
     }
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('click', (e) => {
             radioClicks++;
             if (radioClicks === 1) {
-                alert("La radio emite estática y una secuencia: PUNTO RAYA ( .- )");
+                mostrarAlerta("La radio emite estática y una secuencia: PUNTO RAYA ( .- )");
                 if (typeof Inventory !== 'undefined') {
                     Inventory.addItem('morse_2', 'Señal 2: .-', '📻');
                 }
