@@ -1,120 +1,143 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room 5 - Servidor Central</title>
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/rooms.css">
-    <style>
-        /* Estilos específicos para la Sala 5 */
-        .morse-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            background: #cbd5e1;
-            padding: 15px;
-            border-radius: 4px;
-            color: #000;
-            font-family: monospace;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: left;
-        }
-        .morse-grid div {
-            border-bottom: 1px solid #94a3b8;
-            padding: 2px;
-        }
-        #master-input {
-            width: 100%;
-            padding: 15px;
-            font-size: 24px;
-            text-align: center;
-            background: #000;
-            color: var(--color-primary);
-            border: 2px solid var(--color-primary);
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
+// js/rooms/room5.js
 
-    <header class="room-header">
-        <div class="room-title">SALA 5: SERVIDOR CENTRAL (SALA FINAL)</div>
-        <button id="btn-back" class="btn-back">⬅ Volver a Sala 4</button>
-        <button id="btn-exit-game" class="btn-back" style="border-color: #ef4444; color: #ef4444;">✖ Salir</button>
-    </header>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // ==========================================
+    // 1. ELEMENTOS DEL DOM
+    // ==========================================
+    const serverTrigger = document.getElementById('server-trigger');
+    const morseManual = document.getElementById('morse-manual');
+    
+    const manualModal = document.getElementById('manual-modal');
+    const terminalModal = document.getElementById('terminal-modal');
+    
+    const btnCloseManual = document.getElementById('btn-close-manual');
+    const btnCloseTerminal = document.getElementById('btn-close-terminal');
+    
+    const masterInput = document.getElementById('master-input');
+    const btnVerify = document.getElementById('btn-verify');
+    const terminalStatus = document.getElementById('terminal-status');
 
-    <main class="game-area">
-        <div id="room-environment" class="room-bg" style="background-color: #0f172a;">
+    // ==========================================
+    // 2. NAVEGACIÓN Y SALIDA SEGURA
+    // ==========================================
+    
+    // Botón para volver a la sala anterior
+    document.getElementById('btn-back').addEventListener('click', () => {
+        // Asegúrate de guardar el progreso en el GameManager antes de retroceder
+        if(typeof GameManager !== 'undefined') {
+            GameManager.state.currentRoom = 'room4';
+            GameManager.saveProgress();
+        }
+        window.location.href = 'room4.html'; 
+    });
+
+    // Botón de salida (Opción Nuclear para limpiar la memoria)
+    const btnExit = document.getElementById('btn-exit-game');
+    if (btnExit) {
+        btnExit.addEventListener('click', () => {
+            if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso actual.")) {
+                if(typeof sessionStorage !== 'undefined') {
+                    // Destruimos la partida y el inventario temporal
+                    sessionStorage.removeItem('escapeGameState'); 
+                    sessionStorage.removeItem('secureNodeInventory'); 
+                }
+                window.location.href = '../index.html';
+            }
+        });
+    }
+
+    // ==========================================
+    // 3. INTERACCIÓN CON EL ENTORNO
+    // ==========================================
+    
+    // Abrir el manual y guardarlo en el inventario
+    morseManual.addEventListener('click', () => {
+        manualModal.classList.remove('hidden');
+        
+        // Se añade a la nueva mochila global
+        if(typeof Inventory !== 'undefined') {
+            Inventory.addItem('manual_morse', 'Manual de Cifrado', '📖');
+        }
+    });
+
+    btnCloseManual.addEventListener('click', () => {
+        manualModal.classList.add('hidden');
+    });
+
+    // Abrir la terminal del servidor
+    serverTrigger.addEventListener('click', () => {
+        terminalModal.classList.remove('hidden');
+        masterInput.value = "";
+        terminalStatus.innerText = "";
+    });
+
+    btnCloseTerminal.addEventListener('click', () => {
+        terminalModal.classList.add('hidden');
+    });
+
+    // ==========================================
+    // 4. LÓGICA DE VICTORIA Y PUNTUACIÓN
+    // ==========================================
+    
+    btnVerify.addEventListener('click', () => {
+        const code = masterInput.value.toUpperCase();
+        
+        if (code === "HACK") {
+            // Estilos de éxito
+            terminalStatus.innerText = "CÓDIGO ACEPTADO. PROTOCOLO DE AISLAMIENTO DESACTIVADO.";
+            terminalStatus.style.color = "var(--color-primary)";
+            masterInput.style.borderColor = "var(--color-primary)";
             
-            <!-- El servidor central que pide la contraseña -->
-            <div id="server-trigger" class="interactable" style="left: 35%; top: 10%; width: 250px; height: 350px; background-color: #1e293b; border: 4px solid #334155; border-radius: 10px 10px 0 0; box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);">Terminal Maestra</div>
+            // --- CÁLCULO DE PUNTUACIÓN (VICTORY LOOP) ---
+            if (typeof GameManager !== 'undefined') {
+                // El total inicial es 900 segundos (15 min). Le restamos lo que sobró.
+                const tiempoRestante = GameManager.state.timeRemaining; 
+                const tiempoInvertido = 900 - tiempoRestante; 
+                
+                const minutos = Math.floor(tiempoInvertido / 60);
+                const segundos = tiempoInvertido % 60;
+                const tiempoTexto = `${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
+                
+                // Buscamos el nombre del jugador en el caché (debe coincidir con tu sistema de login)
+                const jugador = localStorage.getItem('secureNodeUser') || 'Operativo Anónimo';
+                
+                // Traemos la tabla de puntuaciones (o creamos una si no existe)
+                let ranking = JSON.parse(localStorage.getItem('secureNodeRanking')) || [];
+                
+                // Añadimos la nueva marca de tiempo
+                ranking.push({
+                    nombre: jugador,
+                    segundosTotales: tiempoInvertido,
+                    tiempoMostrado: tiempoTexto
+                });
+                
+                // Ordenamos de menor a mayor tiempo (el más rápido queda primero)
+                ranking.sort((a, b) => a.segundosTotales - b.segundosTotales);
+                
+                // Guardamos la tabla permanentemente en el navegador
+                localStorage.setItem('secureNodeRanking', JSON.stringify(ranking));
+                // Guardamos el tiempo específicamente para que la pantalla final lo lea
+                sessionStorage.setItem('tiempoVictoria', tiempoTexto);
+            }
             
-            <!-- El manual visible en la mesa -->
-            <div id="morse-manual" class="interactable" style="right: 15%; bottom: 15%; width: 90px; height: 60px; background-color: #f8fafc; color: #000; font-size: 12px; transform: rotate(15deg); border-left: 5px solid #ef4444;">Manual de<br>Cifrado</div>
+            // Pausa dramática y redirección a la pantalla final
+            setTimeout(() => {
+                window.location.href = 'ending.html'; 
+            }, 2000);
 
-        </div>
-
-        <!-- Modal del Manual Morse -->
-        <div id="manual-modal" class="modal hidden">
-            <div class="modal-content" style="width: 500px; background: #f8fafc; color: #000;">
-                <h3 style="color: #000;">Diccionario de Cifrado (Código Morse)</h3>
-                <p style="margin-bottom: 15px;">Documento desclasificado. Úsalo para traducir las señales interceptadas en la instalación.</p>
-                
-                <div class="morse-grid">
-                    <div>A: .-</div>    <div>B: -...</div>  <div>C: -.-.</div>  <div>D: -..</div>
-                    <div>E: .</div>     <div>F: ..-.</div>  <div>G: --.</div>   <div>H: ....</div>
-                    <div>I: ..</div>    <div>J: .---</div>  <div>K: -.-</div>   <div>L: .-..</div>
-                    <div>M: --</div>    <div>N: -.</div>    <div>O: ---</div>   <div>P: .--.</div>
-                    <div>Q: --.-</div>  <div>R: .-.</div>   <div>S: ...</div>   <div>T: -</div>
-                    <div>U: ..-</div>   <div>V: ...-</div>  <div>W: .--</div>   <div>X: -..-</div>
-                    <div>Y: -.--</div>  <div>Z: --..</div>
-                </div>
-
-                <p style="margin-top: 15px; font-family: monospace; font-size: 12px; color: #ef4444; text-align: center; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
-                    <strong>room 1 ++,++,--,--</strong>
-                </p>
-                
-                <button id="btn-close-manual" class="btn-primary" style="margin-top: 20px;">Cerrar Manual</button>
-            </div>
-        </div>
-
-        <!-- Modal de la Terminal Maestra -->
-        <div id="terminal-modal" class="modal hidden">
-            <div class="modal-content" style="width: 400px;">
-                <h3>Anulación Definitiva</h3>
-                <p>Ingrese el código maestro de 4 letras recopilado de las transmisiones de la instalación para escapar.</p>
-                
-                <input type="text" id="master-input" maxlength="4" placeholder="____" autocomplete="off">
-                <button id="btn-verify" class="btn-primary">Ejecutar Código</button>
-                <div id="terminal-status" style="margin-top: 15px; font-weight: bold; min-height: 20px;"></div>
-                
-                <button id="btn-close-terminal" class="btn-close" style="margin-top: 15px; width: 100%;">Cancelar</button>
-            </div>
-        </div>
-    </main>
-
-    <div id="item-details-panel" class="hidden">
-        <div class="item-detail-visual">
-            <img id="detail-item-image" src="" alt="Visualización">
-        </div>
-        <div class="item-detail-content">
-            <h3 id="detail-item-name">Nombre</h3>
-            <p id="detail-item-description">Descripción</p>
-            <button id="close-details-btn" class="secure-btn">Cerrar</button>
-        </div>
-    </div>
-
-    <footer id="inventory-bar">
-        <div class="inventory-title">OBJETOS:</div>
-        <div id="inventory-slots" class="slots-container"></div>
-    </footer>
-
-    <script src="../js/engine/gameManager.js"></script>
-    <script src="../js/engine/inventory.js"></script>
-    <script src="../js/rooms/room5.js"></script>
-</body>
-</html>
+        } else {
+            // Estilos de error
+            terminalStatus.innerText = "CÓDIGO INCORRECTO. ACCESO DENEGADO.";
+            terminalStatus.style.color = "var(--color-alert)";
+            masterInput.style.borderColor = "var(--color-alert)";
+            
+            // Reinicio de la interfaz después de un fallo
+            setTimeout(() => {
+                masterInput.value = "";
+                terminalStatus.innerText = "";
+                masterInput.style.borderColor = "var(--color-primary)";
+            }, 1500);
+        }
+    });
+});
