@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     GameManager.saveProgress();
                 }
                 
-                alert("¡Se escuchó un 'clic'! La puerta se ha desbloqueado.");
+                mostrarAlerta("¡Se escuchó un 'clic'! La puerta se ha desbloqueado.", "ÉXITO");
             }, 1000);
 
         } else {
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Redirigir a la siguiente sala
             window.location.href = 'room2.html'; 
         } else {
-            alert("La puerta está bloqueada electromagnéticamente.");
+            mostrarAlerta("La puerta está bloqueada electromagnéticamente. Requiere código de anulación.", "ACCESO DENEGADO");
         }
     });
 
