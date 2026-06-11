@@ -117,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Guardamos la tabla permanentemente en el navegador
                 localStorage.setItem('secureNodeRanking', JSON.stringify(ranking));
+                // Guardamos el tiempo específicamente para que la pantalla final lo lea
+                sessionStorage.setItem('tiempoVictoria', tiempoTexto);
             }
             
             // Pausa dramática y redirección a la pantalla final
