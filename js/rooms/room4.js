@@ -1,148 +1,175 @@
-// js/rooms/room1.js
+// js/rooms/room4.js
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Elementos del DOM
-    const painting = document.getElementById('painting');
-    const hiddenNote = document.getElementById('hidden-note');
-    const safe = document.getElementById('safe');
-    const modal = document.getElementById('keypad-modal');
-    const door = document.getElementById('door');
-    const safeInput = document.getElementById('safe-input');
-    const btnExit = document.getElementById('btn-exit-game');
-
+    // Entorno
+    const doorEscape = document.getElementById('door-escape');
+    const scannerTrigger = document.getElementById('scanner-trigger');
+    const modal = document.getElementById('dnd-modal');
+    const btnClose = document.getElementById('btn-close-scanner');
+    const statusBox = document.getElementById('scanner-status');
     
-    // Variables de estado de la habitación
-    let isDoorUnlocked = false;
-    const correctCode = "4096"; // Código que aparece en la nota
-    let currentInput = "";
+    let piecesPlaced = 0;
+    const totalPieces = 4;
+    let isScannerUnlocked = false;
 
-    if (btnExit) {
-        btnExit.addEventListener('click', () => {
-            if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso actual.")) {
-                
-                // ¡LA OPCIÓN NUCLEAR PARA BORRAR EL PROGRESO AL SALIR!
-                if(typeof sessionStorage !== 'undefined') {
-                    sessionStorage.removeItem('escapeGameState'); 
-                    sessionStorage.removeItem('secureNodeInventory'); 
-                    // Opcionalmente, puedes usar sessionStorage.clear(); para borrar absolutamente todo.
+    if (typeof GameManager !== 'undefined' && GameManager.state.flags.room4Solved) {
+        isScannerUnlocked = true;
+        doorEscape.classList.remove('locked');
+        doorEscape.classList.add('unlocked');
+        doorEscape.style.backgroundColor = "var(--color-primary)";
+        doorEscape.style.color = "#000";
+        doorEscape.innerText = "ESCAPAR";
+    }
+
+    const btnExit = document.getElementById('btn-exit-game');
+        if (btnExit) {
+            btnExit.addEventListener('click', () => {
+                if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso no guardado.")) {
+                    window.location.href = '../index.html';
                 }
+            });
+        }
 
-                // Ahora sí, redirigimos al menú principal
-                window.location.href = '../index.html';
-            }
-        });
-    }
-
-    if (typeof GameManager !== 'undefined' && GameManager.state.flags.room1Solved) {
-        isDoorUnlocked = true;
-        door.classList.remove('locked');
-        door.classList.add('unlocked');
-        door.innerText = "Puerta Abierta (Avanzar)";
-    }
-
-    // 1. Interacción con el Cuadro
-    painting.addEventListener('click', () => {
-        painting.classList.toggle('moved'); // Aplica la animación CSS
-        hiddenNote.classList.toggle('revealed'); // Muestra/Oculta la nota
-    });
-
-    // 2. Interacción con la Nota (Recoger objeto)
-    hiddenNote.addEventListener('click', () => {
-        if(hiddenNote.classList.contains('revealed')) {
-            // Usamos el nuevo sistema de inventario
-            Inventory.addItem('nota_codigo', 'Nota con código (4096)', '📄');
-            
-            hiddenNote.style.display = "none"; // Desaparece del escenario
+    // --- INTERACCIÓN CON EL ENTORNO ---
+    scannerTrigger.addEventListener('click', () => {
+        if(!isScannerUnlocked) {
+            modal.classList.remove('hidden');
+        } else {
+            mostrarAlerta("El escáner está en verde. La puerta principal está libre.");
         }
     });
 
-    // 3. Abrir la caja fuerte
-    safe.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        currentInput = "";
-        safeInput.value = "";
-    });
-
-    // 4. Cerrar el modal
-    document.getElementById('btn-close-modal').addEventListener('click', () => {
+    btnClose.addEventListener('click', () => {
         modal.classList.add('hidden');
     });
 
-    // 5. Lógica del teclado (Keypad) de la caja fuerte
-    const keys = document.querySelectorAll('.key-num');
-    keys.forEach(key => {
-        key.addEventListener('click', (e) => {
-            if (currentInput.length < 4) {
-                currentInput += e.target.innerText;
-                safeInput.value = currentInput;
+    // Botón de retroceso
+    document.getElementById('btn-back').addEventListener('click', () => {
+        window.location.href = 'room3.html'; // Cambia esto al número de la sala anterior
+    });
+
+    // --- LÓGICA DE DRAG & DROP API ---
+    const pieces = document.querySelectorAll('.card-piece');
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    // 1. Configurar las Piezas (Drag Start)
+    pieces.forEach(piece => {
+        piece.addEventListener('dragstart', (e) => {
+            // Guardamos el ID del elemento que estamos arrastrando
+            e.dataTransfer.setData('text/plain', e.target.id);
+            // Efecto visual opcional
+            setTimeout(() => e.target.style.opacity = '0.5', 0);
+        });
+
+        piece.addEventListener('dragend', (e) => {
+            e.target.style.opacity = '1'; // Restaurar opacidad al soltar
+        });
+    });
+
+    // 2. Configurar las Zonas de Destino
+    dropZones.forEach(zone => {
+        
+        // dragover: Necesario para permitir que un elemento se suelte aquí
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault(); 
+        });
+
+        // dragenter y dragleave: Efectos visuales de "hover"
+        zone.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            if(zone.children.length === 0) { // Solo si está vacío
+                zone.classList.add('drag-over');
+            }
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+        });
+
+        // drop: Cuando soltamos la pieza
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+
+            // Evitar soltar si la zona ya tiene una pieza
+            if (zone.children.length > 0) return;
+
+            // Recuperar el ID de la pieza arrastrada
+            const draggedId = e.dataTransfer.getData('text/plain');
+            const draggedElement = document.getElementById(draggedId);
+
+            // Validar si la pieza pertenece a esta zona
+            const targetSlot = zone.getAttribute('data-slot');
+            const pieceSlot = draggedElement.getAttribute('data-target');
+
+            if (targetSlot === pieceSlot) {
+                // Es correcto: adjuntar la pieza a la zona
+                zone.appendChild(draggedElement);
+                
+                // Quitar la capacidad de arrastrarlo de nuevo (se bloquea en su lugar)
+                draggedElement.setAttribute('draggable', 'false');
+                draggedElement.style.cursor = 'default';
+                
+                piecesPlaced++;
+                checkWinCondition();
+            } else {
+                // Incorrecto: Efecto de rechazo (opcional)
+                statusBox.innerText = "FRAGMENTO INCORRECTO";
+                setTimeout(() => {
+                    if(!isScannerUnlocked) statusBox.innerText = "TARJETA NO DETECTADA";
+                }, 1000);
             }
         });
     });
 
-    document.getElementById('btn-clear').addEventListener('click', () => {
-        currentInput = "";
-        safeInput.value = "";
-    });
-
-    // 6. Validar el código ingresado
-    document.getElementById('btn-enter').addEventListener('click', () => {
-        if (currentInput === correctCode) {
-            safeInput.value = "EXITO";
-            safeInput.style.color = "var(--color-primary)";
+    // --- VALIDACIÓN DE VICTORIA ---
+    function checkWinCondition() {
+        if (piecesPlaced === totalPieces) {
+            isScannerUnlocked = true;
+            
+            // Actualizar Interfaz
+            statusBox.style.backgroundColor = "rgba(0, 255, 65, 0.2)";
+            statusBox.style.color = "var(--color-primary)";
+            statusBox.style.borderColor = "var(--color-primary)";
+            statusBox.innerText = "ACCESO MAESTRO CONCEDIDO";
             
             setTimeout(() => {
                 modal.classList.add('hidden');
-                door.classList.remove('locked');
-                door.classList.add('unlocked');
-                door.innerText = "Puerta Abierta (Avanzar)";
-                isDoorUnlocked = true;
+                doorEscape.classList.remove('locked');
+                doorEscape.classList.add('unlocked');
+                doorEscape.style.backgroundColor = "var(--color-primary)";
+                doorEscape.style.color = "#000";
+                doorEscape.innerText = "ESCAPAR";
                 
-                // GUARDAR EL PROGRESO GLOBALMENTE
+                // GUARDAR EL PROGRESO
                 if(typeof GameManager !== 'undefined') {
-                    GameManager.state.flags.room1Solved = true;
+                    GameManager.state.flags.room4Solved = true;
                     GameManager.saveProgress();
                 }
                 
-                mostrarAlerta("¡Se escuchó un 'clic'! La puerta se ha desbloqueado.", "ÉXITO");
-            }, 1000);
-
-        } else {
-            safeInput.value = "ERROR";
-            safeInput.style.color = "red";
-            setTimeout(() => {
-                currentInput = "";
-                safeInput.value = "";
-                safeInput.style.color = "var(--color-primary)";
-            }, 800);
+                mostrarAlerta("¡El escáner validó la tarjeta! La puerta de escape final está abierta.");
+            }, 1500);
         }
-    });
+    }
 
-    // 7. Salir por la puerta
-    door.addEventListener('click', () => {
-        if (isDoorUnlocked) {
-            // Guardar progreso si estás usando el GameManager
-            if(typeof GameManager !== 'undefined') {
-                GameManager.state.currentRoom = 'room2';
-                GameManager.saveProgress();
-            }
-            // Redirigir a la siguiente sala
-            window.location.href = 'room2.html'; 
+    // --- SALIDA FINAL ---
+    doorEscape.addEventListener('click', () => {
+        if (isScannerUnlocked) {
+            // ¡AHORA SÍ! Redirigir a la pantalla de victoria final
+            window.location.href = 'room5.html'; 
         } else {
-            mostrarAlerta("La puerta está bloqueada electromagnéticamente. Requiere código de anulación.", "ACCESO DENEGADO");
+            mostrarAlerta("Acceso denegado. Reconstruye la tarjeta maestra en el escáner.");
         }
     });
 
     let radioClicks = 0;
     document.querySelector('.radio-oculta').addEventListener('click', (e) => {
         radioClicks++;
-        if (radioClicks < 5) {
-            console.log(`Clics en radio: ${radioClicks}/5`); // Pista en consola para los curiosos
-        } else if (radioClicks === 5) {
-            mostrarAlerta("La radio emite estática y una secuencia: PUNTO PUNTO PUNTO PUNTO ( .... )");
-            Inventory.addItem('morse_1', 'Señal 1: ....', '📻');
+        if (radioClicks === 5) {
+            mostrarAlerta("La radio emite estática y una secuencia: RAYA PUNTO RAYA ( -.- )");
+            Inventory.addItem('morse_4', 'Señal 4: -.-', '📻');
             e.target.style.display = 'none';
         }
     });
-
 });
