@@ -1,9 +1,48 @@
 // js/index.js
 
+// ==========================================
+// FUNCIÓN GLOBAL DE ALERTAS DEL MENÚ
+// ==========================================
+function mostrarAlertaMenu(mensaje, titulo = "ERROR DE SISTEMA") {
+    let modal = document.getElementById('cyber-alert-menu');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cyber-alert-menu';
+        modal.className = 'modal hidden';
+        modal.style.zIndex = "9999"; 
+        modal.innerHTML = `
+            <div class="glass-panel" style="max-width: 400px;">
+                <h2 id="alert-menu-title" style="color: #ff003c; margin-bottom: 20px; font-family: 'Share Tech Mono', monospace;">${titulo}</h2>
+                <p id="alert-menu-text" style="color: white; margin-bottom: 30px; font-family: 'Share Tech Mono', monospace; line-height: 1.5;"></p>
+                <button id="alert-menu-btn" class="cyber-btn" style="border-color: #00ff41; color: #00ff41; width: 100%;">ENTENDIDO</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('alert-menu-btn').addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+    }
+    
+    // Cambiar color del título dependiendo de si es éxito o error
+    const titleElement = document.getElementById('alert-menu-title');
+    titleElement.innerText = titulo;
+    if (titulo === "OPERACIÓN EXITOSA" || titulo === "ACCESO CONCEDIDO") {
+        titleElement.style.color = "#00ff41";
+    } else {
+        titleElement.style.color = "#ff003c";
+    }
+
+    document.getElementById('alert-menu-text').innerText = mensaje;
+    modal.classList.remove('hidden');
+}
+
+// ==========================================
+// INICIALIZACIÓN PRINCIPAL
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     
     // --- ELEMENTOS DEL DOM ---
-    // Botones del menú principal
     const btnPlay = document.getElementById('btn-play');
     const btnLogin = document.getElementById('btn-login');
     const btnRegister = document.getElementById('btn-register');
@@ -11,117 +50,82 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLogout = document.getElementById('btn-logout');
     const authButtons = document.querySelectorAll('.auth-btn');
 
-    // Modales (Ventanas emergentes)
     const modalLogin = document.getElementById('modal-login');
     const modalRegister = document.getElementById('modal-register');
     const modalLeaderboard = document.getElementById('modal-leaderboard');
-
-    // Botones de cierre general
     const closeBtns = document.querySelectorAll('.btn-close-modal');
 
-    // ==========================================
-    // SISTEMA DE RETROALIMENTACIÓN ACÚSTICA (Web Audio API)
-    // ==========================================
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
 
-    // Inicializamos el contexto de audio
+    const API_URL = 'http://localhost:3000/api';
+
+    // --- SISTEMA DE RETROALIMENTACIÓN ACÚSTICA ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playCyberHover() {
-        // Los navegadores bloquean el audio hasta que el usuario interactúa, esto lo despierta
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
-
-        // Creamos el sintetizador y el control de volumen
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
 
-        // 1. Timbre: Una onda cuadrada da ese toque digital/retro
         oscillator.type = 'square';
-        
-        // 2. Frecuencia: Empezamos en 800 Hz y bajamos bruscamente a 300 Hz
         oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
         oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05); 
 
-        // 3. Envolvente (Volumen): Muy bajito (5%) para que sea elegante, no molesto
         gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05); // Decaimiento súper rápido
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05); 
 
-        // Conectamos los cables virtuales: Oscilador -> Volumen -> Altavoces
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
 
-        // Reproducimos el sonido durante exactamente 50 milisegundos
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.05); 
     }
 
-    // Conectar el sonido a todos los botones cibernéticos
     document.querySelectorAll('.cyber-btn').forEach(btn => {
-        // 'mouseenter' detecta cuando el ratón entra al área del botón
         btn.addEventListener('mouseenter', playCyberHover);
     });
 
-    // Formularios
-    const formLogin = document.getElementById('form-login');
-    const formRegister = document.getElementById('form-register');
-
-    // URL base de tu API Express
-    const API_URL = 'http://localhost:3000/api';
-
+    // --- CONTROL DE SESIÓN ---
     function checkLoginStatus() {
         const user = localStorage.getItem('secureNodeUser');
         if (user) {
-            // Usuario logueado: Ocultar login/registro y mostrar logout
             authButtons.forEach(btn => btn.classList.add('hidden'));
             btnLogout.classList.remove('hidden');
-            // Opcional: Cambiar el subtítulo para dar la bienvenida
             document.querySelector('.subtitle').innerText = `OPERATIVO: ${user.toUpperCase()}`;
         } else {
-            // Usuario no logueado
             authButtons.forEach(btn => btn.classList.remove('hidden'));
             btnLogout.classList.add('hidden');
             document.querySelector('.subtitle').innerText = `PROTOCOLO DE AISLAMIENTO ACTIVO`;
         }
     }
 
-    // Ejecutar al cargar la página
     checkLoginStatus();
 
-    // Lógica del Botón Cerrar Sesión
     btnLogout.addEventListener('click', () => {
         localStorage.removeItem('secureNodeUser');
-        // También limpiamos el progreso del juego por seguridad si cierran sesión
-        localStorage.removeItem('escapeGameState');
-        localStorage.removeItem('secureNodeInventory');
-        alert("Sesión finalizada. Conexión cerrada.");
+        sessionStorage.removeItem('escapeGameState');
+        sessionStorage.removeItem('secureNodeInventory');
+        mostrarAlertaMenu("Sesión finalizada. Desconexión completada.", "SISTEMA CERRADO");
         checkLoginStatus();
     });
 
-    // --- FUNCIONALIDAD VISUAL (MODALES Y NAVEGACIÓN) ---
-
-    // INICIAR MISIÓN (Redirige a la Sala 1)
+    // --- NAVEGACIÓN Y MODALES ---
     btnPlay.addEventListener('click', () => {
-        localStorage.removeItem('secureNodeInventory');
+        sessionStorage.removeItem('secureNodeInventory'); // Vaciamos por seguridad
         window.location.href = 'rooms/room1.html';
     });
 
-    // Abrir Modales
-    btnLogin.addEventListener('click', () => {
-        modalLogin.classList.remove('hidden');
-    });
-
-    btnRegister.addEventListener('click', () => {
-        modalRegister.classList.remove('hidden');
-    });
-
-    // Abrir Modal de Puntuaciones y cargar datos de la base de datos
-    btnLeaderboard.addEventListener('click', async () => {
+    btnLogin.addEventListener('click', () => modalLogin.classList.remove('hidden'));
+    btnRegister.addEventListener('click', () => modalRegister.classList.remove('hidden'));
+    
+    btnLeaderboard.addEventListener('click', () => {
         modalLeaderboard.classList.remove('hidden');
-        await loadLeaderboard();
+        cargarMejoresTiempos(); // Cargamos los tiempos dinámicamente al abrir
     });
 
-    // Cerrar Modales
     closeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             modalLogin.classList.add('hidden');
@@ -130,154 +134,121 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
-    // --- INTEGRACIÓN CON LA API EXPRESS (BACKEND) ---
-
-    // 1. Manejar el Registro de Operativos
-    formRegister.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evita que la página se recargue
+    // --- TABLA DE PUNTUACIONES ---
+    function cargarMejoresTiempos() {
+        const contenedorRanking = document.getElementById('tabla-ranking-body');
+        if (!contenedorRanking) return;
         
-        // Obtener los valores de los inputs por su posición en el formulario
-        const inputs = e.target.querySelectorAll('input');
-        const username = inputs[0].value;
-        const email = inputs[1].value;
-        const password = inputs[2].value;
-
-        try {
-            const response = await fetch(`${API_URL}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert(data.message);
-                modalRegister.classList.add('hidden');
-                e.target.reset(); // Limpiar el formulario
-            } else {
-                alert("Error de registro: " + data.error);
-            }
-        } catch (error) {
-            console.error("Error al conectar con el servidor:", error);
-            alert("El servidor central (API Express) está fuera de línea.");
+        // Priorizamos los datos locales del final del juego (Victory Loop)
+        const ranking = JSON.parse(localStorage.getItem('secureNodeRanking')) || [];
+        contenedorRanking.innerHTML = '';
+        
+        if (ranking.length === 0) {
+            contenedorRanking.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay registros operativos aún.</td></tr>';
+            return;
         }
-    });
-
-    // 2. Manejar el Inicio de Sesión
-    formLogin.addEventListener('submit', async (e) => {
-        e.preventDefault();
         
-        const inputs = e.target.querySelectorAll('input');
-        const username = inputs[0].value;
-        const password = inputs[1].value;
+        const top5 = ranking.slice(0, 5);
+        
+        top5.forEach((registro, index) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>#${index + 1}</td>
+                <td style="color: var(--color-neon);">${registro.nombre}</td>
+                <td>${registro.tiempoMostrado}</td>
+            `;
+            contenedorRanking.appendChild(fila);
+        });
+    }
 
-        try {
-            const response = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
+    // --- INTEGRACIÓN Y VALIDACIONES (BACKEND / LOCAL) ---
 
-            const data = await response.json();
+    // 1. Registro con Validaciones Estrictas
+    if (formRegister) {
+        formRegister.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const inputs = e.target.querySelectorAll('input');
+            const username = inputs[0].value.trim();
+            const email = inputs[1].value.trim();
+            const password = inputs[2].value.trim();
 
-            if (response.ok) {
-                alert(`Acceso Concedido. Bienvenido operativo ${data.username}`);
-
-                
-                // Guardar el nombre de usuario para el registro final de tiempo
-                localStorage.setItem('secureNodeUser', data.username);
-                
-                modalLogin.classList.add('hidden');
-                e.target.reset();
-                checkLoginStatus();
-
-            } else {
-                alert("Acceso Denegado: " + data.error);
+            // Validaciones Frontend
+            if (username.length < 4 || username.includes(" ")) {
+                mostrarAlertaMenu("El ID debe tener al menos 4 caracteres y no contener espacios.");
+                return;
             }
-        } catch (error) {
-            console.error("Error al conectar con el servidor:", error);
-            alert("No se pudo contactar al servidor de autenticación (API Express).");
-        }
-    });
+            const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexCorreo.test(email)) {
+                mostrarAlertaMenu("Formato de correo inválido (ej: agente@nodo.com).");
+                return;
+            }
+            if (password.length < 6) {
+                mostrarAlertaMenu("La clave debe contener un mínimo de 6 caracteres.");
+                return;
+            }
 
-    // 3. Cargar la Tabla de Puntuaciones dinámicamente
-    async function loadLeaderboard() {
-        const tbody = document.querySelector('.leaderboard-table tbody');
-        
-        try {
-            const response = await fetch(`${API_URL}/leaderboard`);
-            const data = await response.json();
-
-            if (response.ok) {
-                // Limpiar la tabla actual (quitar los datos de ejemplo)
-                tbody.innerHTML = '';
-
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No hay registros de operativos todavía.</td></tr>';
-                    return;
-                }
-
-                // Llenar la tabla con los datos reales de SQLite
-                data.forEach((user, index) => {
-                    const row = document.createElement('tr');
-                    
-                    // Formatear el tiempo de segundos a MM:SS
-                    const minutes = Math.floor(user.best_time / 60);
-                    const seconds = user.best_time % 60;
-                    const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-                    row.innerHTML = `
-                        <td>#${index + 1}</td>
-                        <td style="color: var(--color-neon); font-weight: bold;">${user.username}</td>
-                        <td>${formattedTime}</td>
-                    `;
-                    tbody.appendChild(row);
+            // Consumo de API
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
                 });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarAlertaMenu(data.message, "OPERACIÓN EXITOSA");
+                    modalRegister.classList.add('hidden');
+                    e.target.reset(); 
+                } else {
+                    mostrarAlertaMenu(data.error, "ERROR DE REGISTRO");
+                }
+            } catch (error) {
+                console.error("Error API:", error);
+                mostrarAlertaMenu("El servidor central está fuera de línea. Revisar conexión de backend.");
             }
-        } catch (error) {
-            console.error("Error al cargar puntuaciones:", error);
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Error al conectar con la base de datos.</td></tr>';
-        }
+        });
     }
-});
 
-function cargarMejoresTiempos() {
-    // Busca el contenedor donde van las filas (asegúrate de tener un <tbody> o un <div> con este ID)
-    const contenedorRanking = document.getElementById('tabla-ranking-body');
-    if (!contenedorRanking) return;
-    
-    // Obtenemos los datos que guardamos en Room 5
-    const ranking = JSON.parse(localStorage.getItem('secureNodeRanking')) || [];
-    
-    // Limpiamos el contenido estático previo
-    contenedorRanking.innerHTML = '';
-    
-    // Si no hay nadie, mostramos un mensaje
-    if (ranking.length === 0) {
-        contenedorRanking.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay registros operativos aún.</td></tr>';
-        return;
+    // 2. Login con Validaciones
+    if (formLogin) {
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const inputs = e.target.querySelectorAll('input');
+            const username = inputs[0].value.trim();
+            const password = inputs[1].value.trim();
+
+            if (username === "" || password === "") {
+                mostrarAlertaMenu("Credenciales incompletas. Llene todos los campos requeridos.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarAlertaMenu(`Bienvenido al sistema, operativo ${data.username}`, "ACCESO CONCEDIDO");
+                    localStorage.setItem('secureNodeUser', data.username);
+                    
+                    modalLogin.classList.add('hidden');
+                    e.target.reset();
+                    checkLoginStatus();
+                } else {
+                    mostrarAlertaMenu(data.error, "ACCESO DENEGADO");
+                }
+            } catch (error) {
+                console.error("Error API:", error);
+                mostrarAlertaMenu("No se pudo contactar al servidor de autenticación.");
+            }
+        });
     }
-    
-    // Mostramos solo el Top 5
-    const top5 = ranking.slice(0, 5);
-    
-    top5.forEach((registro, index) => {
-        const fila = document.createElement('tr');
-        
-        // Estructura de tu tabla
-        fila.innerHTML = `
-            <td>#${index + 1}</td>
-            <td style="color: var(--color-primary);">${registro.nombre}</td>
-            <td>${registro.tiempoMostrado}</td>
-        `;
-        
-        contenedorRanking.appendChild(fila);
-    });
-}
-
-// Llama a esta función cuando cargue la página principal
-document.addEventListener('DOMContentLoaded', () => {
-    cargarMejoresTiempos();
 });
