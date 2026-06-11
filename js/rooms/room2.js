@@ -43,15 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const btnExit = document.getElementById('btn-exit-game');
-        if (btnExit) {
-            btnExit.addEventListener('click', () => {
-                if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso no guardado.")) {
-                    window.location.href = '../index.html';
-                }
-            });
-        }
-    
     // --- ESTADO INICIAL DE LA RADIO ---
     const radio = document.querySelector('.radio-oculta');
     if (radio && typeof Inventory !== 'undefined' && Inventory.hasItem('morse_2')) {
