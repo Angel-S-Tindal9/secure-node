@@ -105,21 +105,25 @@ body {
 }
 
 /* =========================================
-   BLOQUEO DE ORIENTACIÓN (FORZAR HORIZONTAL)
+   BLOQUEO DE ORIENTACIÓN (SOLO PARA LAS SALAS)
 ========================================= */
 #orientation-lock {
-    display: none; /* Oculto por defecto */
+    display: none; 
 }
 
-/* Solo se activa si es una pantalla móvil (max-width) Y está en vertical (portrait) */
+/* Solo se activa si es móvil, está en vertical, Y tiene la clase .game-mode */
 @media screen and (max-width: 896px) and (orientation: portrait) {
     
-    #orientation-lock {
+    body.game-mode {
+        background-color: #050b14;
+    }
+
+    body.game-mode #orientation-lock {
         display: flex;
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
         background: #050b14;
-        z-index: 999999; /* Por encima de TODO */
+        z-index: 999999;
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -129,14 +133,14 @@ body {
         padding: 20px;
     }
     
-    #orientation-lock .icon-rotate {
+    body.game-mode #orientation-lock .icon-rotate {
         font-size: 4rem;
         margin-bottom: 20px;
         animation: rotatePhone 2s infinite ease-in-out;
     }
 
-    /* OCULTAMOS EL RESTO DEL JUEGO PARA QUE NO PUEDAN HACER NADA */
-    body > *:not(#orientation-lock):not(script) {
+    /* Oculta todo lo demás SOLO en las salas de juego */
+    body.game-mode > *:not(#orientation-lock):not(script) {
         display: none !important;
     }
 }
