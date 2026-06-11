@@ -19,6 +19,7 @@ const GameManager = {
     },
 
     setupOrientationLock: function() {
+        document.body.classList.add('game-mode');
         let lockScreen = document.getElementById('orientation-lock');
         if (!lockScreen) {
             lockScreen = document.createElement('div');
