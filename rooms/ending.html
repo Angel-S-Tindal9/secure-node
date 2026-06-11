@@ -113,7 +113,7 @@
         <div class="libertad-text">LIBERTAD</div>
         
         <div class="stats-container">
-            <p>SISTEMA VULNERADO. TIEMPO RESTANTE: <span id="final-time">--:--</span></p>
+            <p>SISTEMA VULNERADO. TIEMPO INVERTIDO: <span id="tiempo-final">--:--</span></p>
             <button class="btn-restart" id="btn-restart">Volver al Menú</button>
         </div>
     </div>
@@ -172,6 +172,23 @@
             btnRestart.addEventListener('click', () => {
                 window.location.href = '../index.html'; 
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Leemos el tiempo que nos mandó la Sala 5
+            const tiempoFinal = sessionStorage.getItem('tiempoVictoria');
+            
+            if (tiempoFinal) {
+                document.getElementById('tiempo-final').innerText = tiempoFinal;
+            }
+
+            // LIMPIEZA FINAL: Como ya ganaron, destruimos la partida y el inventario
+            // para que si hacen clic en "Volver al Menú", empiecen de cero.
+            sessionStorage.removeItem('escapeGameState');
+            sessionStorage.removeItem('secureNodeInventory');
+            sessionStorage.removeItem('tiempoVictoria');
         });
     </script>
 </body>
