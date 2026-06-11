@@ -39,15 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         doorEscape.style.color = "#000";
     }
 
-    const btnExit = document.getElementById('btn-exit-game');
-        if (btnExit) {
-            btnExit.addEventListener('click', () => {
-                if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso no guardado.")) {
-                    window.location.href = '../index.html';
-                }
-            });
-        }
-
     // --- ESTADO INICIAL AL CARGAR LA PÁGINA ---
     // Si el jugador recarga la página, ocultamos los objetos que ya están en su inventario
     
