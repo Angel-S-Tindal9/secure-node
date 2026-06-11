@@ -19,6 +19,49 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botones de cierre general
     const closeBtns = document.querySelectorAll('.btn-close-modal');
 
+    // ==========================================
+    // SISTEMA DE RETROALIMENTACIÓN ACÚSTICA (Web Audio API)
+    // ==========================================
+
+    // Inicializamos el contexto de audio
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playCyberHover() {
+        // Los navegadores bloquean el audio hasta que el usuario interactúa, esto lo despierta
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        // Creamos el sintetizador y el control de volumen
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        // 1. Timbre: Una onda cuadrada da ese toque digital/retro
+        oscillator.type = 'square';
+        
+        // 2. Frecuencia: Empezamos en 800 Hz y bajamos bruscamente a 300 Hz
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
+        oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05); 
+
+        // 3. Envolvente (Volumen): Muy bajito (5%) para que sea elegante, no molesto
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05); // Decaimiento súper rápido
+
+        // Conectamos los cables virtuales: Oscilador -> Volumen -> Altavoces
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        // Reproducimos el sonido durante exactamente 50 milisegundos
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.05); 
+    }
+
+    // Conectar el sonido a todos los botones cibernéticos
+    document.querySelectorAll('.cyber-btn').forEach(btn => {
+        // 'mouseenter' detecta cuando el ratón entra al área del botón
+        btn.addEventListener('mouseenter', playCyberHover);
+    });
+
     // Formularios
     const formLogin = document.getElementById('form-login');
     const formRegister = document.getElementById('form-register');
