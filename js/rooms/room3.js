@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Plaqueta de Variables (Base)
     mathNote.addEventListener('click', () => {
-        alert("VARIABLES DEL SISTEMA:\nX = 20\nY = 2\nZ = 30\n(Faltan las instrucciones de las válvulas)");
+        mostrarAlerta("VARIABLES DEL SISTEMA:\nX = 20\nY = 2\nZ = 30\n(Faltan las instrucciones de las válvulas)");
         Inventory.addItem('nota_vars', 'Variables (X=20, Y=2, Z=30)', '🧮');
         mathNote.style.display = 'none';
     });
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clueV1.addEventListener('click', () => {
         if(clueV1.classList.contains('revealed')) {
-            alert("Has encontrado un papel arrugado: 'Fórmula de Válvula 1: X + Y * Z'");
+            mostrarAlerta("Has encontrado un papel arrugado: 'Fórmula de Válvula 1: X + Y * Z'");
             Inventory.addItem('clue_v1', 'Fórmula V1: X + Y * Z', '📝');
             clueV1.style.display = 'none';
         }
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Revisar la Terminal -> Descubrir V2
     terminal.addEventListener('click', () => {
-        alert("El monitor parpadea y muestra un registro de error:\n'ERROR EN VÁLVULA 2. SE REQUIERE CALIBRACIÓN: X * Y - Z'");
+        mostrarAlerta("El monitor parpadea y muestra un registro de error:\n'ERROR EN VÁLVULA 2. SE REQUIERE CALIBRACIÓN: X * Y - Z'");
         Inventory.addItem('clue_v2', 'Fórmula V2: X * Y - Z', '💻');
         // Cambiar el texto del monitor visualmente
         terminal.innerText = "ERR_V2";
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clueV3.addEventListener('click', () => {
         if(clueV3.classList.contains('revealed')) {
-            alert("Encuentras un plano esquemático: 'Configuración Válvula 3: X / Y + Z'");
+            mostrarAlerta("Encuentras un plano esquemático: 'Configuración Válvula 3: X / Y + Z'");
             Inventory.addItem('clue_v3', 'Fórmula V3: X / Y + Z', '🗺️');
             clueV3.style.display = 'none';
         }
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!isEngineStable) {
             modal.classList.remove('hidden');
         } else {
-            alert("El núcleo ya está estabilizado. Procede a la salida.");
+            mostrarAlerta("El núcleo ya está estabilizado. Procede a la salida.");
         }
     });
 
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 GameManager.saveProgress();
             }
             
-            alert("¡Sistemas en línea! El bloqueo maestro ha sido desactivado.");
+            mostrarAlerta("¡Sistemas en línea! El bloqueo maestro ha sido desactivado.");
         }, 1000);
     }
 
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isEngineStable) {
             window.location.href = 'room4.html'; 
         } else {
-            alert("La puerta no tiene energía. Revisa el entorno y configura el panel de válvulas primero.");
+            mostrarAlerta("La puerta no tiene energía. Revisa el entorno y configura el panel de válvulas primero.");
         }
     });
 
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.radio-oculta').addEventListener('click', (e) => {
         radioClicks++;
         if (radioClicks === 8) {
-            alert("La radio emite estática y una secuencia: RAYA PUNTO RAYA PUNTO ( -.-. )");
+            mostrarAlerta("La radio emite estática y una secuencia: RAYA PUNTO RAYA PUNTO ( -.-. )");
             Inventory.addItem('morse_3', 'Señal 3: -.-.', '📻');
             e.target.style.display = 'none';
         }
