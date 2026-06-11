@@ -14,16 +14,38 @@ const GameManager = {
     init: function() {
         this.loadProgress();
         this.startTimer();
+        this.setupExitButton(); // 👈 El GameManager ahora toma el control del botón de salida
+    },
+
+    // 🏆 FUNCIÓN MAESTRA PARA CONTROLAR EL BOTÓN DE SALIDA EN CUALQUIER SALA
+    setupExitButton: function() {
+        const btnExit = document.getElementById('btn-exit-game');
+        
+        if (btnExit) {
+            // Usamos un clon del botón para evitar que se dupliquen los eventos si se recarga
+            const newBtnExit = btnExit.cloneNode(true);
+            btnExit.parentNode.replaceChild(newBtnExit, btnExit);
+
+            newBtnExit.addEventListener('click', () => {
+                if(confirm("¿Seguro que deseas abandonar la misión? Se perderá todo el progreso actual.")) {
+                    // Limpieza absoluta de la memoria temporal
+                    sessionStorage.removeItem('escapeGameState'); 
+                    sessionStorage.removeItem('secureNodeInventory');
+                    sessionStorage.removeItem('tiempoVictoria');
+                    
+                    // Redirección al menú principal
+                    window.location.href = '../index.html';
+                }
+            });
+        }
     },
 
     saveProgress: function() {
-        // CAMBIO 1: Usamos sessionStorage en lugar de localStorage
         sessionStorage.setItem('escapeGameState', JSON.stringify(this.state));
         console.log("Progreso guardado automáticamente.");
     },
 
     loadProgress: function() {
-        // CAMBIO 2: Usamos sessionStorage en lugar de localStorage
         const saved = sessionStorage.getItem('escapeGameState');
         if (saved) {
             this.state = JSON.parse(saved);
@@ -34,7 +56,7 @@ const GameManager = {
         if (!this.state.inventory.includes(item)) {
             this.state.inventory.push(item);
             
-            // CAMBIO 3: Quitamos el "this." para que llame al nuevo inventory.js correctamente
+            // Llama al nuevo inventory.js correctamente
             if (typeof renderInventory === 'function') {
                 renderInventory(); 
             }
@@ -64,8 +86,8 @@ const GameManager = {
     },
 
     triggerGameOver: function() {
-        alert("¡El tiempo se ha agotado! El sistema se ha bloqueado.");
-        // Lógica de reinicio o pantalla de fallo
+        mostrarAlerta("¡El tiempo se ha agotado! El sistema se ha bloqueado.", "BRECHA DETECTADA");
+        // Aquí podrías redirigir a una pantalla de "Game Over"
     },
 
     resetProgress: function() {
@@ -76,7 +98,7 @@ const GameManager = {
             flags: {}
         };
         
-        // CAMBIO 4: Destruir tanto la partida como la nueva caja fuerte del inventario
+        // Destruir tanto la partida como la caja fuerte del inventario
         sessionStorage.removeItem('escapeGameState');
         sessionStorage.removeItem('secureNodeInventory');
         
@@ -89,14 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
     GameManager.init();
 });
 
+// ==========================================
+// FUNCIÓN GLOBAL DE SALIDA (Respaldo)
+// ==========================================
 window.salirDelJuego = function(rutaInicio) {
     const confirmar = confirm("¿Estás seguro de que deseas abandonar la misión? Se perderá todo el progreso actual.");
     
     if (confirmar) {
-        // La opción nuclear: Borra absolutamente TODO lo que haya en la memoria temporal
         sessionStorage.clear(); 
-        
-        // Redirige al jugador al menú principal
         window.location.href = rutaInicio || '../index.html'; 
     }
 };
@@ -105,31 +127,35 @@ window.salirDelJuego = function(rutaInicio) {
 // SISTEMA DE ALERTAS CIBERNÉTICAS (Global)
 // ==========================================
 window.mostrarAlerta = function(mensaje, titulo = "SISTEMA") {
-    // 1. Buscamos si el modal ya existe en esta sala
     let modal = document.getElementById('cyber-alert-modal');
     
-    // 2. Si no existe, lo creamos e inyectamos en el HTML mágicamente
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'cyber-alert-modal';
         modal.className = 'modal hidden';
         modal.innerHTML = `
             <div class="glass-panel" style="max-width: 450px;">
-                <h2 id="cyber-alert-title" style="color: #00ff41; margin-bottom: 20px; letter-spacing: 2px; font-family: monospace;"></h2>
-                <p id="cyber-alert-text" style="color: white; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; font-family: monospace;"></p>
+                <h2 id="cyber-alert-title" style="color: #00ff41; margin-bottom: 20px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace;"></h2>
+                <p id="cyber-alert-text" style="color: white; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; font-family: 'Share Tech Mono', monospace;"></p>
                 <button id="cyber-alert-btn" class="cyber-btn" style="width: 100%;">ENTENDIDO</button>
             </div>
         `;
         document.body.appendChild(modal);
 
-        // Lógica para cerrar el modal al hacer clic en ENTENDIDO
         document.getElementById('cyber-alert-btn').addEventListener('click', () => {
             modal.classList.add('hidden');
         });
     }
     
-    // 3. Ponemos el texto que pediste y lo mostramos
-    document.getElementById('cyber-alert-title').innerText = titulo;
+    // Asignar el color dependiendo de si es un error o éxito
+    const titleElement = document.getElementById('cyber-alert-title');
+    titleElement.innerText = titulo;
+    if (titulo === "ACCESO DENEGADO" || titulo === "ERROR" || titulo === "BRECHA DETECTADA") {
+        titleElement.style.color = "#ff003c";
+    } else {
+        titleElement.style.color = "#00ff41";
+    }
+
     document.getElementById('cyber-alert-text').innerText = mensaje;
     modal.classList.remove('hidden');
 };
