@@ -100,3 +100,36 @@ window.salirDelJuego = function(rutaInicio) {
         window.location.href = rutaInicio || '../index.html'; 
     }
 };
+
+// ==========================================
+// SISTEMA DE ALERTAS CIBERNÉTICAS (Global)
+// ==========================================
+window.mostrarAlerta = function(mensaje, titulo = "SISTEMA") {
+    // 1. Buscamos si el modal ya existe en esta sala
+    let modal = document.getElementById('cyber-alert-modal');
+    
+    // 2. Si no existe, lo creamos e inyectamos en el HTML mágicamente
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cyber-alert-modal';
+        modal.className = 'modal hidden';
+        modal.innerHTML = `
+            <div class="glass-panel" style="max-width: 450px;">
+                <h2 id="cyber-alert-title" style="color: #00ff41; margin-bottom: 20px; letter-spacing: 2px; font-family: monospace;"></h2>
+                <p id="cyber-alert-text" style="color: white; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; font-family: monospace;"></p>
+                <button id="cyber-alert-btn" class="cyber-btn" style="width: 100%;">ENTENDIDO</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Lógica para cerrar el modal al hacer clic en ENTENDIDO
+        document.getElementById('cyber-alert-btn').addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+    }
+    
+    // 3. Ponemos el texto que pediste y lo mostramos
+    document.getElementById('cyber-alert-title').innerText = titulo;
+    document.getElementById('cyber-alert-text').innerText = mensaje;
+    modal.classList.remove('hidden');
+};
