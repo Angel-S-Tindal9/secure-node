@@ -32,21 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'room4.html'; 
     });
 
-    // Botón de salida (Opción Nuclear para limpiar la memoria)
-    const btnExit = document.getElementById('btn-exit-game');
-    if (btnExit) {
-        btnExit.addEventListener('click', () => {
-            if(confirm("¿Seguro que deseas abandonar la misión? Se perderá el progreso actual.")) {
-                if(typeof sessionStorage !== 'undefined') {
-                    // Destruimos la partida y el inventario temporal
-                    sessionStorage.removeItem('escapeGameState'); 
-                    sessionStorage.removeItem('secureNodeInventory'); 
-                }
-                window.location.href = '../index.html';
-            }
-        });
-    }
-
     // ==========================================
     // 3. INTERACCIÓN CON EL ENTORNO
     // ==========================================
