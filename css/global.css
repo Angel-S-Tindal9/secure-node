@@ -103,3 +103,46 @@ body {
     color: #000;
     box-shadow: 0 0 15px #00ff41;
 }
+
+/* =========================================
+   BLOQUEO DE ORIENTACIÓN (FORZAR HORIZONTAL)
+========================================= */
+#orientation-lock {
+    display: none; /* Oculto por defecto */
+}
+
+/* Solo se activa si es una pantalla móvil (max-width) Y está en vertical (portrait) */
+@media screen and (max-width: 896px) and (orientation: portrait) {
+    
+    #orientation-lock {
+        display: flex;
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #050b14;
+        z-index: 999999; /* Por encima de TODO */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #00ff41;
+        font-family: 'Share Tech Mono', 'Courier New', monospace;
+        padding: 20px;
+    }
+    
+    #orientation-lock .icon-rotate {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        animation: rotatePhone 2s infinite ease-in-out;
+    }
+
+    /* OCULTAMOS EL RESTO DEL JUEGO PARA QUE NO PUEDAN HACER NADA */
+    body > *:not(#orientation-lock):not(script) {
+        display: none !important;
+    }
+}
+
+@keyframes rotatePhone {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-90deg); }
+    100% { transform: rotate(-90deg); }
+}
